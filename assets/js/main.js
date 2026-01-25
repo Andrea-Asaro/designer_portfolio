@@ -56,44 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   
-    const setActiveCard = () => {
-      if (prefersReduced.matches) return;
-  
-      const rect = scroller.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-  
-      let bestEl = null;
-      let bestDist = Infinity;
-  
-      for (const card of cards) {
-        const cRect = card.getBoundingClientRect();
-        const cCenter = cRect.left + cRect.width / 2;
-  
-        const dist = Math.abs(centerX - cCenter);
-        const norm = clamp(dist / (rect.width / 2), 0, 1);
-  
-        const intensity = (1 - norm) ** 2;
-        const scale = 1 + 0.16 * intensity;
-  
-        card.style.setProperty("--scale", scale.toFixed(3));
-  
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestEl = card;
-        }
-      }
-  
-      for (const card of cards) card.classList.remove("is-active");
-      if (bestEl) bestEl.classList.add("is-active");
-    };
-  
     let rafId = 0;
     const onScroll = () => {
       if (rafId) return;
       rafId = window.requestAnimationFrame(() => {
         rafId = 0;
         normalizeLoop();
-        setActiveCard();
       });
     };
   
@@ -146,13 +114,25 @@ document.addEventListener("DOMContentLoaded", () => {
     scroller.addEventListener("keydown", (e) => {
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   
-      const activeIndex = Math.max(
-        0,
-        cards.findIndex((c) => c.classList.contains("is-active"))
-      );
+      const rect = scroller.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      
+      let bestIndex = 0;
+      let bestDist = Infinity;
+      
+      for (let i = 0; i < cards.length; i++) {
+        const cRect = cards[i].getBoundingClientRect();
+        const cCenter = cRect.left + cRect.width / 2;
+        const dist = Math.abs(centerX - cCenter);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIndex = i;
+        }
+      }
+      
       const dir = e.key === "ArrowRight" ? 1 : -1;
-  
-      const next = clamp(activeIndex + dir, 0, cards.length - 1);
+      const next = clamp(bestIndex + dir, 0, cards.length - 1);
+      
       centerCard(cards[next], !prefersReduced.matches);
       e.preventDefault();
     });
@@ -169,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
       centerCard(cards[targetIndexInMiddle], false);
   
       normalizeLoop();
-      setActiveCard();
     };
   
     window.addEventListener("resize", () => {

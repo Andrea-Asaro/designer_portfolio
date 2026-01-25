@@ -7,9 +7,9 @@
     --gutter: clamp(16px, 4vw, 48px);
     --nav-gap: clamp(14px, 2.2vw, 28px);
   
-    --thumb-w: clamp(160px, 16vw, 220px);
-    --thumb-h: clamp(150px, 18vw, 220px);
-    --thumb-ar: 4 / 5;
+    --thumb-w: clamp(180px, 18vw, 240px);
+    --thumb-h: clamp(220px, 22vw, 320px);
+    --work-gap: clamp(18px, 2.6vw, 34px);    
   
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
@@ -158,8 +158,6 @@
     flex: 0 0 auto;
     width: var(--thumb-w);
     scroll-snap-align: center;
-    --scale: 1;
-    --lift: 0px;
   }
   
   .work-link {
@@ -200,27 +198,14 @@
   }
   
   .work-media {
-    aspect-ratio: var(--thumb-ar);
-    height: auto;
-  
+    width: 100%;
+    height: var(--thumb-h);
     border-radius: 0;
+  
     background:
       radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 52%),
       linear-gradient(135deg, hsl(var(--media-hue, 210) 70% 60%), hsl(calc(var(--media-hue, 210) + 40) 70% 45%));
-  
-    transform: scale(var(--scale));
-    transform-origin: center;
-    transition: transform 220ms var(--ease);
-    will-change: transform;
   }
-
-  .work-card.is-active {
-    z-index: 2;
-  }
-  
-  /* .work-link:hover .work-media {
-    transform: scale(calc(var(--scale) + 0.02));
-  } */
   
   .hero-footer {
     margin-top: auto;
