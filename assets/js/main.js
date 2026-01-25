@@ -55,6 +55,47 @@ document.addEventListener("DOMContentLoaded", () => {
         scroller.scrollLeft = left - setWidth;
       }
     };
+
+    /* Active tile handling (single centered tile only) */
+    let activeIndex = -1;
+    let scrollEndTimer = 0;
+    let wheelLock = false;
+
+    const getNearestIndex = () => {
+    const rect = scroller.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+
+    let best = 0;
+    let bestDist = Infinity;
+
+    for (let i = 0; i < cards.length; i++) {
+        const r = cards[i].getBoundingClientRect();
+        const c = r.left + r.width / 2;
+        const d = Math.abs(centerX - c);
+        if (d < bestDist) {
+        bestDist = d;
+        best = i;
+        }
+    }
+    return best;
+    };
+
+    const setActiveByIndex = (idx) => {
+    if (idx === activeIndex) return;
+    if (activeIndex >= 0 && cards[activeIndex]) cards[activeIndex].classList.remove("is-active");
+    activeIndex = idx;
+    if (cards[activeIndex]) cards[activeIndex].classList.add("is-active");
+    };
+
+    const settleAfterScroll = () => {
+    window.clearTimeout(scrollEndTimer);
+    scrollEndTimer = window.setTimeout(() => {
+        normalizeLoop();
+        const idx = getNearestIndex();
+        setActiveByIndex(idx);
+        wheelLock = false;
+    }, 140);
+    };
   
     let rafId = 0;
     const onScroll = () => {
@@ -62,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rafId = window.requestAnimationFrame(() => {
         rafId = 0;
         normalizeLoop();
+        settleAfterScroll();
       });
     };
   
@@ -75,27 +117,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return e.deltaY;
   };
 
-  scroller.addEventListener(
+    /* Wheel -> one-tile step (snap) */
+    scroller.addEventListener(
     "wheel",
     (e) => {
-      // Allow browser zoom gesture (trackpad pinch)
       if (e.ctrlKey) return;
-
-      // If no horizontal overflow, don't hijack page scrolling
       if (scroller.scrollWidth <= scroller.clientWidth) return;
-
+  
       const dy = wheelToPixels(e);
       const dx = e.deltaX;
-
-      // Prefer the dominant axis (trackpads can emit both)
-      const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-      if (delta === 0) return;
-
+      const dominant = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+      if (dominant === 0) return;
+  
       e.preventDefault();
-      scroller.scrollLeft += delta;
-
-      // Keep the infinite loop normalization responsive
-      onScroll();
+  
+      if (wheelLock) return;
+      wheelLock = true;
+  
+      // Ensure we start from the current centered tile
+      if (activeIndex < 0) setActiveByIndex(getNearestIndex());
+  
+      const dir = dominant > 0 ? 1 : -1;
+      const next = clamp(activeIndex + dir, 0, cards.length - 1);
+  
+      setActiveByIndex(next);
+      centerCard(cards[next], !prefersReduced.matches);
+      settleAfterScroll();
     },
     { passive: false }
   );
@@ -126,6 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!isDown) return;
       isDown = false;
       scroller.classList.remove("is-dragging");
+
+      const idx = getNearestIndex();
+      setActiveByIndex(idx);
+      centerCard(cards[idx], !prefersReduced.matches);
+
       onScroll();
     };
   
@@ -167,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const next = clamp(bestIndex + dir, 0, cards.length - 1);
       
       centerCard(cards[next], !prefersReduced.matches);
+      setActiveByIndex(next);
       e.preventDefault();
     });
   
@@ -180,8 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
       scroller.scrollLeft = setWidth;
       centerCard(cards[targetIndexInMiddle], false);
-  
       normalizeLoop();
+      setActiveByIndex(getNearestIndex());
     };
   
     window.addEventListener("resize", () => {
