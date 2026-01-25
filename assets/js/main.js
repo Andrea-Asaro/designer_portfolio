@@ -66,6 +66,39 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   
     scroller.addEventListener("scroll", onScroll, { passive: true });
+
+      /* Wheel -> horizontal scroll (only inside the carousel) */
+  const wheelToPixels = (e) => {
+    // deltaMode: 0=pixel, 1=line, 2=page
+    if (e.deltaMode === 1) return e.deltaY * 16;
+    if (e.deltaMode === 2) return e.deltaY * scroller.clientWidth;
+    return e.deltaY;
+  };
+
+  scroller.addEventListener(
+    "wheel",
+    (e) => {
+      // Allow browser zoom gesture (trackpad pinch)
+      if (e.ctrlKey) return;
+
+      // If no horizontal overflow, don't hijack page scrolling
+      if (scroller.scrollWidth <= scroller.clientWidth) return;
+
+      const dy = wheelToPixels(e);
+      const dx = e.deltaX;
+
+      // Prefer the dominant axis (trackpads can emit both)
+      const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+      if (delta === 0) return;
+
+      e.preventDefault();
+      scroller.scrollLeft += delta;
+
+      // Keep the infinite loop normalization responsive
+      onScroll();
+    },
+    { passive: false }
+  );
   
     /* Drag-to-scroll: desktop quality-of-life */
     let isDown = false;
