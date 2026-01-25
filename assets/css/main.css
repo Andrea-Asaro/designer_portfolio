@@ -217,15 +217,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.24em;
+    gap: 0.09em;
     line-height: 0.82;
     font-size: clamp(4.4rem, 16vw, 13rem);
   }
   
   .wm-sans {
     font-family: "Geist", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    font-weight: 850;
+    font-weight: 600;
     letter-spacing: -0.05em;
+    font-size: 0.8em;
   }
   
   .wm-serif {
@@ -233,6 +234,7 @@
     font-style: italic;
     font-weight: 400;
     letter-spacing: -0.02em;
+    font-size: 1.17em;
   }
   
   @media (max-width: 860px) {
