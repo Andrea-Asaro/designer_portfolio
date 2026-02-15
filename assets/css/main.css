@@ -159,6 +159,10 @@
     flex: 0 0 auto;
     width: var(--thumb-w);
     scroll-snap-align: center;
+    /* Make room for the scaled active tile */
+    margin-inline: 0;
+    transition: margin-inline 520ms var(--ease);
+    will-change: margin-inline;
   }
   
   .work-link {
@@ -215,6 +219,11 @@
   }
 
   /* ONLY the centered one grows (downwards because origin is top) */
+  .work-card.is-active {
+    /* Extra slot width ~ (scale - 1) * w / 2 per side, with a small buffer */
+    margin-inline: calc(var(--thumb-w) * 0.045);
+  }
+
   .work-card.is-active .work-media {
     transform: scale(1.095); /* tweak: 1.06–1.11 */
   }

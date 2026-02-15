@@ -33,9 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   
     const measureSetWidth = () =>
-      cards
-        .slice(middleStart, middleEnd)
-        .reduce((sum, el) => sum + el.offsetWidth, 0);
+        cards.slice(middleStart, middleEnd).reduce((sum, el) => {
+          const cs = window.getComputedStyle(el);
+          const ml = parseFloat(cs.marginLeft) || 0;
+          const mr = parseFloat(cs.marginRight) || 0;
+          return sum + el.offsetWidth + ml + mr;
+        }, 0);
   
     let setWidth = 0;
   
@@ -85,6 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeIndex >= 0 && cards[activeIndex]) cards[activeIndex].classList.remove("is-active");
     activeIndex = idx;
     if (cards[activeIndex]) cards[activeIndex].classList.add("is-active");
+    // Keep loop math correct when the active card changes its margins
+    setWidth = measureSetWidth();
     };
 
     const settleAfterScroll = () => {
