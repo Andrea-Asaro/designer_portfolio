@@ -88,8 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeIndex >= 0 && cards[activeIndex]) cards[activeIndex].classList.remove("is-active");
     activeIndex = idx;
     if (cards[activeIndex]) cards[activeIndex].classList.add("is-active");
-    // Keep loop math correct when the active card changes its margins
-    setWidth = measureSetWidth();
     };
 
     const settleAfterScroll = () => {

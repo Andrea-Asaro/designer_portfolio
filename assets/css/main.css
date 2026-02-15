@@ -9,7 +9,6 @@
   
     --thumb-w: clamp(180px, 18vw, 240px);
     --thumb-h: clamp(220px, 22vw, 320px);
-    --work-gap: clamp(18px, 2.6vw, 34px);    
   
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
@@ -159,14 +158,11 @@
     flex: 0 0 auto;
     width: var(--thumb-w);
     scroll-snap-align: center;
-    /* Make room for the scaled active tile */
-    margin-inline: 0;
-    transition: margin-inline 520ms var(--ease);
-    will-change: margin-inline;
   }
   
   .work-link {
     display: block;
+    width: 100%;
   }
   
   .work-meta {
@@ -208,10 +204,12 @@
     border-radius: 0;
   
     transform-origin: top center;
-    transform: none;
+    transform: scale(1);
     transition: transform 520ms var(--ease);
-  
     will-change: transform;
+
+    /* This prevents overlap while still looking like the tile grows */
+    clip-path: inset(0);
 
     background:
       radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 52%),
