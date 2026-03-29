@@ -1,50 +1,67 @@
-/* Carousel: infinite loop + center-weight scaling (progressive enhancement) */
+/* Carousel: infinite loop + centered active card scaling */
 document.addEventListener("DOMContentLoaded", () => {
     const scroller = document.getElementById("workScroller");
     if (!scroller) return;
   
+    /* Motion preference is used only to decide whether centering animates smoothly */
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   
-    /* Setup: clone items before + after to create a seamless loop */
+    /* Build a seamless loop by cloning the original card set before and after */
     const originals = Array.from(scroller.querySelectorAll(".work-card"));
     const originalCount = originals.length;
-    const initialIndex = originals.findIndex((el) => el.dataset.initial === "true");
+    const initialIndex = originals.findIndex((card) => card.dataset.initial === "true");
   
-    const cloneSet = () =>
-      originals.map((el) => {
-        const c = el.cloneNode(true);
-        c.removeAttribute("data-initial");
-        return c;
+    const buildCloneSet = () =>
+      originals.map((card) => {
+        const clone = card.cloneNode(true);
+        clone.removeAttribute("data-initial");
+        return clone;
       });
   
-    const fragBefore = document.createDocumentFragment();
-    const fragAfter = document.createDocumentFragment();
+    const beforeFragment = document.createDocumentFragment();
+    const afterFragment = document.createDocumentFragment();
   
-    cloneSet().forEach((node) => fragBefore.appendChild(node));
-    cloneSet().forEach((node) => fragAfter.appendChild(node));
+    buildCloneSet().forEach((node) => beforeFragment.appendChild(node));
+    buildCloneSet().forEach((node) => afterFragment.appendChild(node));
   
-    scroller.prepend(fragBefore);
-    scroller.append(fragAfter);
+    scroller.prepend(beforeFragment);
+    scroller.append(afterFragment);
   
     let cards = Array.from(scroller.querySelectorAll(".work-card"));
     const middleStart = originalCount;
     const middleEnd = originalCount * 2;
   
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-  
-    const measureSetWidth = () =>
-        cards.slice(middleStart, middleEnd).reduce((sum, el) => {
-          const cs = window.getComputedStyle(el);
-          const ml = parseFloat(cs.marginLeft) || 0;
-          const mr = parseFloat(cs.marginRight) || 0;
-          return sum + el.offsetWidth + ml + mr;
-        }, 0);
-  
-    let setWidth = 0;
+    /* Small utilities used by several interaction modes */
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   
     const centerCard = (card, smooth) => {
       const left = card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2;
       scroller.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
+    };
+  
+    /* Width is measured on the original middle set so loop normalization stays stable */
+    let activeIndex = -1;
+    let setWidth = 0;
+  
+    const measureSetWidth = () => {
+      const previousActive = activeIndex;
+  
+      if (previousActive >= 0 && cards[previousActive]) {
+        cards[previousActive].classList.remove("is-active");
+      }
+  
+      const width = cards.slice(middleStart, middleEnd).reduce((sum, card) => {
+        const styles = window.getComputedStyle(card);
+        const marginLeft = parseFloat(styles.marginLeft) || 0;
+        const marginRight = parseFloat(styles.marginRight) || 0;
+        return sum + card.offsetWidth + marginLeft + marginRight;
+      }, 0);
+  
+      if (previousActive >= 0 && cards[previousActive]) {
+        cards[previousActive].classList.add("is-active");
+      }
+  
+      return width;
     };
   
     const normalizeLoop = () => {
@@ -58,51 +75,74 @@ document.addEventListener("DOMContentLoaded", () => {
         scroller.scrollLeft = left - setWidth;
       }
     };
-
-    /* Active tile handling (single centered tile only) */
-    let activeIndex = -1;
-    let scrollEndTimer = 0;
-    let wheelLock = false;
-
+  
+    /* Active-card detection is based on the card nearest to the viewport center */
     const getNearestIndex = () => {
-    const rect = scroller.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-
-    let best = 0;
-    let bestDist = Infinity;
-
-    for (let i = 0; i < cards.length; i++) {
-        const r = cards[i].getBoundingClientRect();
-        const c = r.left + r.width / 2;
-        const d = Math.abs(centerX - c);
-        if (d < bestDist) {
-        bestDist = d;
-        best = i;
+      const rect = scroller.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+  
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+  
+      for (let i = 0; i < cards.length; i += 1) {
+        const cardRect = cards[i].getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distance = Math.abs(centerX - cardCenter);
+  
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = i;
         }
-    }
-    return best;
-    };
-
-    const setActiveByIndex = (idx) => {
-    if (idx === activeIndex) return;
-    if (activeIndex >= 0 && cards[activeIndex]) cards[activeIndex].classList.remove("is-active");
-    activeIndex = idx;
-    if (cards[activeIndex]) cards[activeIndex].classList.add("is-active");
-    };
-
-    const settleAfterScroll = () => {
-    window.clearTimeout(scrollEndTimer);
-    scrollEndTimer = window.setTimeout(() => {
-        normalizeLoop();
-        const idx = getNearestIndex();
-        setActiveByIndex(idx);
-        wheelLock = false;
-    }, 140);
+      }
+  
+      return bestIndex;
     };
   
+    const setActiveByIndex = (index) => {
+      if (index === activeIndex) return;
+  
+      if (activeIndex >= 0 && cards[activeIndex]) {
+        cards[activeIndex].classList.remove("is-active");
+      }
+  
+      activeIndex = index;
+  
+      if (cards[activeIndex]) {
+        cards[activeIndex].classList.add("is-active");
+      }
+    };
+  
+    /* Scroll settling waits briefly so smooth scroll, wheel, and drag all share one end-state */
+    let scrollEndTimer = 0;
+    let wheelLock = false;
+  
+    const settleAfterScroll = () => {
+        window.clearTimeout(scrollEndTimer);
+      
+        scrollEndTimer = window.setTimeout(() => {
+          normalizeLoop();
+      
+          const nearestIndex = getNearestIndex();
+          setActiveByIndex(nearestIndex);
+      
+          /* La card attiva ora cambia dimensione reale nel layout:
+             dopo l'assegnazione della classe la ricentriamo una seconda volta */
+          window.requestAnimationFrame(() => {
+            if (cards[nearestIndex]) {
+              centerCard(cards[nearestIndex], false);
+            }
+          });
+      
+          wheelLock = false;
+        }, 140);
+      };
+  
+    /* Scroll work is throttled into rAF to avoid excessive layout reads */
     let rafId = 0;
+  
     const onScroll = () => {
       if (rafId) return;
+  
       rafId = window.requestAnimationFrame(() => {
         rafId = 0;
         normalizeLoop();
@@ -112,75 +152,101 @@ document.addEventListener("DOMContentLoaded", () => {
   
     scroller.addEventListener("scroll", onScroll, { passive: true });
 
-      /* Wheel -> horizontal scroll (only inside the carousel) */
-  const wheelToPixels = (e) => {
-    // deltaMode: 0=pixel, 1=line, 2=page
-    if (e.deltaMode === 1) return e.deltaY * 16;
-    if (e.deltaMode === 2) return e.deltaY * scroller.clientWidth;
-    return e.deltaY;
-  };
-
-    /* Wheel -> one-tile step (snap) */
+    /* Quando la card attiva finisce di cambiare width/flex-basis,
+   il suo centro geometrico può spostarsi: la ricentriamo */
+    scroller.addEventListener("transitionend", (event) => {
+        if (
+        !event.target.classList.contains("work-card") ||
+        (event.propertyName !== "width" && event.propertyName !== "flex-basis")
+        ) {
+        return;
+        }
+    
+        const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
+    
+        if (cards[currentIndex]) {
+        centerCard(cards[currentIndex], false);
+        }
+    });
+  
+    /* Convert vertical wheel intent into horizontal one-card stepping */
+    const wheelToPixels = (event) => {
+      if (event.deltaMode === 1) return event.deltaY * 16;
+      if (event.deltaMode === 2) return event.deltaY * scroller.clientWidth;
+      return event.deltaY;
+    };
+  
     scroller.addEventListener(
-    "wheel",
-    (e) => {
-      if (e.ctrlKey) return;
-      if (scroller.scrollWidth <= scroller.clientWidth) return;
+      "wheel",
+      (event) => {
+        if (event.ctrlKey) return;
+        if (scroller.scrollWidth <= scroller.clientWidth) return;
   
-      const dy = wheelToPixels(e);
-      const dx = e.deltaX;
-      const dominant = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-      if (dominant === 0) return;
+        const deltaY = wheelToPixels(event);
+        const deltaX = event.deltaX;
+        const dominantDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
   
-      e.preventDefault();
+        if (dominantDelta === 0) return;
   
-      if (wheelLock) return;
-      wheelLock = true;
+        event.preventDefault();
   
-      // Ensure we start from the current centered tile
-      if (activeIndex < 0) setActiveByIndex(getNearestIndex());
+        if (wheelLock) return;
+        wheelLock = true;
   
-      const dir = dominant > 0 ? 1 : -1;
-      const next = clamp(activeIndex + dir, 0, cards.length - 1);
+        if (activeIndex < 0) {
+          setActiveByIndex(getNearestIndex());
+        }
   
-      setActiveByIndex(next);
-      centerCard(cards[next], !prefersReduced.matches);
-      settleAfterScroll();
-    },
-    { passive: false }
-  );
+        const direction = dominantDelta > 0 ? 1 : -1;
+        const nextIndex = clamp(activeIndex + direction, 0, cards.length - 1);
   
-    /* Drag-to-scroll: desktop quality-of-life */
-    let isDown = false;
+        setActiveByIndex(nextIndex);
+        centerCard(cards[nextIndex], !prefersReduced.matches);
+        settleAfterScroll();
+      },
+      { passive: false }
+    );
+  
+    /* Pointer dragging preserves the existing desktop interaction without changing link behavior */
+    let isPointerDown = false;
     let startX = 0;
     let startScrollLeft = 0;
     let moved = false;
   
-    scroller.addEventListener("pointerdown", (e) => {
-      isDown = true;
+    scroller.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+  
+      isPointerDown = true;
       moved = false;
-      startX = e.clientX;
+      startX = event.clientX;
       startScrollLeft = scroller.scrollLeft;
+  
       scroller.classList.add("is-dragging");
-      scroller.setPointerCapture(e.pointerId);
+      scroller.setPointerCapture(event.pointerId);
     });
   
-    scroller.addEventListener("pointermove", (e) => {
-      if (!isDown) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 8) moved = true;
-      scroller.scrollLeft = startScrollLeft - dx;
+    scroller.addEventListener("pointermove", (event) => {
+      if (!isPointerDown) return;
+  
+      const deltaX = event.clientX - startX;
+  
+      if (Math.abs(deltaX) > 8) {
+        moved = true;
+      }
+  
+      scroller.scrollLeft = startScrollLeft - deltaX;
     });
   
     const endDrag = () => {
-      if (!isDown) return;
-      isDown = false;
+      if (!isPointerDown) return;
+  
+      isPointerDown = false;
       scroller.classList.remove("is-dragging");
-
-      const idx = getNearestIndex();
-      setActiveByIndex(idx);
-      centerCard(cards[idx], !prefersReduced.matches);
-
+  
+      const nearestIndex = getNearestIndex();
+      setActiveByIndex(nearestIndex);
+      centerCard(cards[nearestIndex], !prefersReduced.matches);
+  
       onScroll();
     };
   
@@ -189,53 +255,37 @@ document.addEventListener("DOMContentLoaded", () => {
   
     scroller.addEventListener(
       "click",
-      (e) => {
-        if (moved) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+      (event) => {
+        if (!moved) return;
+        event.preventDefault();
+        event.stopPropagation();
       },
       true
     );
   
-    /* Keyboard: snap-to-center with arrows */
-    scroller.addEventListener("keydown", (e) => {
-      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    /* Keyboard navigation still snaps one card at a time from the current centered item */
+    scroller.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
   
-      const rect = scroller.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      
-      let bestIndex = 0;
-      let bestDist = Infinity;
-      
-      for (let i = 0; i < cards.length; i++) {
-        const cRect = cards[i].getBoundingClientRect();
-        const cCenter = cRect.left + cRect.width / 2;
-        const dist = Math.abs(centerX - cCenter);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestIndex = i;
-        }
-      }
-      
-      const dir = e.key === "ArrowRight" ? 1 : -1;
-      const next = clamp(bestIndex + dir, 0, cards.length - 1);
-      
-      centerCard(cards[next], !prefersReduced.matches);
-      setActiveByIndex(next);
-      e.preventDefault();
+      const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      const nextIndex = clamp(currentIndex + direction, 0, cards.length - 1);
+  
+      setActiveByIndex(nextIndex);
+      centerCard(cards[nextIndex], !prefersReduced.matches);
+      event.preventDefault();
     });
   
-    /* Initial layout */
+    /* Initial positioning centers the configured starting card inside the middle clone set */
     const init = () => {
       cards = Array.from(scroller.querySelectorAll(".work-card"));
       setWidth = measureSetWidth();
   
       const fallbackIndex = Math.floor(originalCount / 2);
-      const targetIndexInMiddle = middleStart + (initialIndex >= 0 ? initialIndex : fallbackIndex);
+      const targetIndex = middleStart + (initialIndex >= 0 ? initialIndex : fallbackIndex);
   
       scroller.scrollLeft = setWidth;
-      centerCard(cards[targetIndexInMiddle], false);
+      centerCard(cards[targetIndex], false);
       normalizeLoop();
       setActiveByIndex(getNearestIndex());
     };
@@ -248,4 +298,3 @@ document.addEventListener("DOMContentLoaded", () => {
   
     init();
   });
-  

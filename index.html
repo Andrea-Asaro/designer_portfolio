@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,125 +13,244 @@
       rel="stylesheet"
     />
 
+    <!-- Tailwind CDN config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0b0b0b",
+              muted: "rgba(11, 11, 11, 0.48)",
+              hairline: "rgba(11, 11, 11, 0.1)",
+            },
+            fontFamily: {
+              sans: ["Geist", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+              serif: ['"STIX Two Text"', "serif"],
+            },
+            transitionTimingFunction: {
+              editorial: "cubic-bezier(0.22, 1, 0.36, 1)",
+            },
+          },
+        },
+      };
+    </script>
+
     <link rel="stylesheet" href="assets/css/main.css" />
     <script defer src="assets/js/main.js"></script>
   </head>
 
-  <body>
-    <a class="skip-link" href="#content">Vai al contenuto</a>
+  <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
+    <!-- Skip link -->
+    <a
+      class="skip-link absolute left-[clamp(16px,4vw,48px)] top-[10px] z-10 border border-hairline bg-white px-3 py-2 -translate-y-[160%] transition-transform duration-200 ease-editorial focus:translate-y-0"
+      href="#content"
+    >
+      Vai al contenuto
+    </a>
 
-    <div class="page">
-      <header class="site-header">
-        <div class="header-left">
-          <span class="kicker">3D, Motion, Art direction</span>
+    <!-- Page shell -->
+    <div class="flex min-h-[100svh] flex-col">
+      <!-- Header -->
+      <header
+        class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(16px,4vw,48px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
+      >
+        <div>
+          <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
+            3D, Motion, Art direction
+          </span>
         </div>
 
-        <nav class="site-nav" aria-label="Navigazione principale">
-          <ul>
-            <li><a href="index.html" aria-current="page">Home</a></li>
-            <li><a href="projects.html">Projects</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
+        <nav aria-label="Navigazione principale">
+          <ul
+            class="m-0 flex list-none flex-wrap items-center justify-start gap-[clamp(14px,2.2vw,28px)] p-0 min-[861px]:justify-center"
+          >
+            <li>
+              <a
+                href="index.html"
+                aria-current="page"
+                class="nav-link font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="projects.html"
+                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >
+                Projects
+              </a>
+            </li>
+            <li>
+              <a
+                href="about.html"
+                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >
+                About
+              </a>
+            </li>
+            <li>
+              <a
+                href="contact.html"
+                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >
+                Contact
+              </a>
+            </li>
           </ul>
         </nav>
 
-        <div class="header-right">
-          <a class="contact-cta" href="contact.html">Send me a message</a>
+        <div class="justify-self-start min-[861px]:justify-self-end">
+          <a
+            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+            href="contact.html"
+          >
+            Send me a message
+          </a>
         </div>
       </header>
 
-      <main id="content" class="main">
-        <section class="work-strip" aria-label="Progetti selezionati">
+      <!-- Main content -->
+      <main id="content" class="flex flex-1 flex-col">
+        <!-- Horizontal work carousel -->
+        <section class="mt-[clamp(34px,10vh,96px)]" aria-label="Progetti selezionati">
           <div
-            class="work-scroller"
+            class="work-scroller flex cursor-grab touch-pan-x items-start overflow-x-auto overflow-y-visible px-[clamp(16px,4vw,48px)] pb-[clamp(50px,7vw,120px)] [overscroll-behavior-x:contain] [scroll-padding-inline:50%] [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch]"
             id="workScroller"
             tabindex="0"
             role="region"
             aria-label="Carousel progetti (scorri orizzontalmente)"
           >
-            <article class="work-card">
-              <a class="work-link" href="project-1.html" aria-label="Apri progetto 01: Maison Minimal">
-                <header class="work-meta">
-                  <div class="work-no">01/</div>
-                  <h2 class="work-title">Maison Minimal</h2>
-                  <div class="work-tag">[BRAND SYSTEM]</div>
+            <!-- Card 01 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-1.html" aria-label="Apri progetto 01: Maison Minimal">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">01/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Maison Minimal</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[BRAND SYSTEM]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Maison Minimal" style="--media-hue: 210"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Maison Minimal"
+                  style="--media-hue: 210"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card">
-              <a class="work-link" href="project-2.html" aria-label="Apri progetto 02: Lumen Posters">
-                <header class="work-meta">
-                  <div class="work-no">02/</div>
-                  <h2 class="work-title">Lumen Posters</h2>
-                  <div class="work-tag">[EDITORIAL]</div>
+            <!-- Card 02 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-2.html" aria-label="Apri progetto 02: Lumen Posters">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">02/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Lumen Posters</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[EDITORIAL]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Lumen Posters" style="--media-hue: 120"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Lumen Posters"
+                  style="--media-hue: 120"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card">
-              <a class="work-link" href="project-3.html" aria-label="Apri progetto 03: Sculpted UI">
-                <header class="work-meta">
-                  <div class="work-no">03/</div>
-                  <h2 class="work-title">Sculpted UI</h2>
-                  <div class="work-tag">[PRODUCT]</div>
+            <!-- Card 03 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-3.html" aria-label="Apri progetto 03: Sculpted UI">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">03/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Sculpted UI</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PRODUCT]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Sculpted UI" style="--media-hue: 280"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Sculpted UI"
+                  style="--media-hue: 280"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card" data-initial="true">
-              <a class="work-link" href="project-4.html" aria-label="Apri progetto 04: Ceramica">
-                <header class="work-meta">
-                  <div class="work-no">04/</div>
-                  <h2 class="work-title">Ceramica</h2>
-                  <div class="work-tag">[ART DIRECTION]</div>
+            <!-- Card 04 -->
+            <article class="work-card shrink-0 snap-center" data-initial="true">
+              <a class="work-link block w-full" href="project-4.html" aria-label="Apri progetto 04: Ceramica">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">04/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Ceramica</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[ART DIRECTION]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Ceramica" style="--media-hue: 18"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Ceramica"
+                  style="--media-hue: 18"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card">
-              <a class="work-link" href="project-5.html" aria-label="Apri progetto 05: Soft Cosmetics">
-                <header class="work-meta">
-                  <div class="work-no">05/</div>
-                  <h2 class="work-title">Soft Cosmetics</h2>
-                  <div class="work-tag">[CLIENT WORK]</div>
+            <!-- Card 05 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-5.html" aria-label="Apri progetto 05: Soft Cosmetics">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">05/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Soft Cosmetics</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[CLIENT WORK]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Soft Cosmetics" style="--media-hue: 330"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Soft Cosmetics"
+                  style="--media-hue: 330"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card">
-              <a class="work-link" href="project-6.html" aria-label="Apri progetto 06: Gallery Space">
-                <header class="work-meta">
-                  <div class="work-no">06/</div>
-                  <h2 class="work-title">Gallery Space</h2>
-                  <div class="work-tag">[3D / MOTION]</div>
+            <!-- Card 06 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-6.html" aria-label="Apri progetto 06: Gallery Space">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">06/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Gallery Space</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[3D / MOTION]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Gallery Space" style="--media-hue: 240"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Gallery Space"
+                  style="--media-hue: 240"
+                ></div>
               </a>
             </article>
 
-            <article class="work-card">
-              <a class="work-link" href="project-7.html" aria-label="Apri progetto 07: Botanical">
-                <header class="work-meta">
-                  <div class="work-no">07/</div>
-                  <h2 class="work-title">Botanical</h2>
-                  <div class="work-tag">[PACKAGING]</div>
+            <!-- Card 07 -->
+            <article class="work-card shrink-0 snap-center">
+              <a class="work-link block w-full" href="project-7.html" aria-label="Apri progetto 07: Botanical">
+                <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">07/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Botanical</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PACKAGING]</div>
                 </header>
-                <div class="work-media" role="img" aria-label="Preview: Botanical" style="--media-hue: 90"></div>
+                <div
+                  class="work-media w-full"
+                  role="img"
+                  aria-label="Preview: Botanical"
+                  style="--media-hue: 90"
+                ></div>
               </a>
             </article>
           </div>
         </section>
 
-        <footer class="hero-footer" aria-label="Titolo portfolio">
-          <h1 class="wordmark">
-            <span class="wm-sans">DADDARIO</span>
-            <span class="wm-serif">rosanna</span>
+        <!-- Footer wordmark -->
+        <footer
+          class="mt-auto px-[clamp(16px,4vw,48px)] pb-[clamp(16px,4vw,48px)] pt-[clamp(48px,12vh,120px)]"
+          aria-label="Titolo portfolio"
+        >
+          <h1 class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.4rem,16vw,13rem)] leading-[0.82]">
+            <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
+            <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
           </h1>
         </footer>
       </main>
