@@ -38,19 +38,58 @@
   
   /* Hide native scrollbar while keeping horizontal scroll behavior intact */
   .work-scroller {
+    min-height: 630px;
+    overflow-x: hidden;
     scrollbar-width: none;
   }
   
+    /* Reserve enough vertical space for the tallest active card + its meta block,
+    so the title/footer position stays visually fixed */
   .work-scroller::-webkit-scrollbar {
     display: none;
   }
-  
-  /* Dragging state kept in CSS because JS toggles it dynamically */
-  .work-scroller.is-dragging {
-    cursor: grabbing;
-    user-select: none;
+
+  @media (hover: none) and (pointer: coarse) {
+    .work-scroller {
+      overflow-x: auto;
+    }
   }
   
+  /* Pulsanti carosello: stile leggero, sempre attivi, coerenti con il reference */
+.carousel-nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 1px solid rgba(11, 11, 11, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: rgba(11, 11, 11, 0.52);
+    transition:
+      border-color 220ms var(--ease),
+      color 220ms var(--ease),
+      transform 220ms var(--ease);
+  }
+  
+  .carousel-nav-button svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .carousel-nav-button:hover,
+  .carousel-nav-button:focus-visible {
+    color: var(--text);
+    border-color: rgba(11, 11, 11, 0.22);
+    transform: translateY(-1px);
+  }
+
   /* Meta hover/focus lift stays custom because it is tied to nested link state */
   .work-meta {
     transform: translateY(0);
@@ -104,18 +143,13 @@
     height: clamp(250px, 28vw, 500px);
   }
   
-  /* Reserve enough vertical space for the tallest active card + its meta block,
-     so the title/footer position stays visually fixed */
-  .work-scroller {
-    min-height: 630px;
-  }
-  
   /* Respect reduced-motion while preserving layout and functionality */
   @media (prefers-reduced-motion: reduce) {
     .skip-link,
     .nav-link,
     .work-meta,
-    .work-media {
+    .work-media,
+    .carousel-nav-button {
       transition: none !important;
     }
   }

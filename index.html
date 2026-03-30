@@ -116,7 +116,7 @@
         <!-- Horizontal work carousel -->
         <section class="mt-[clamp(30px,7vh,55px)]" aria-label="Progetti selezionati">
           <div
-            class="work-scroller flex cursor-grab touch-pan-x items-start overflow-x-auto overflow-y-visible px-[clamp(16px,4vw,48px)] pb-[clamp(16px,4vw,48px] [overscroll-behavior-x:contain] [scroll-padding-inline:50%] [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch]"
+            class="work-scroller flex touch-pan-x items-start overflow-x-auto overflow-y-visible px-[clamp(16px,4vw,48px)] pb-[clamp(16px,4vw,48px)] [overscroll-behavior-x:contain] [scroll-padding-inline:50%] [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch]"
             id="workScroller"
             tabindex="0"
             role="region"
@@ -241,6 +241,33 @@
               </a>
             </article>
           </div>
+
+          <div class="hidden min-[861px]:flex items-center gap-3 px-[clamp(16px,4vw,48px)] pt-[22px]" aria-label="Controlli carosello">
+            <button
+              id="workPrevButton"
+              type="button"
+              class="carousel-nav-button"
+              aria-controls="workScroller"
+              aria-label="Progetto precedente"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14.5 6.5L9 12l5.5 5.5" />
+              </svg>
+            </button>
+        
+            <button
+              id="workNextButton"
+              type="button"
+              class="carousel-nav-button"
+              aria-controls="workScroller"
+              aria-label="Progetto successivo"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9.5 6.5L15 12l-5.5 5.5" />
+              </svg>
+            </button>
+          </div>
+
         </section>
 
         <!-- Footer wordmark -->

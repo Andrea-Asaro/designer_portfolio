@@ -2,6 +2,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     const scroller = document.getElementById("workScroller");
     if (!scroller) return;
+
+    /* Controlli desktop del carosello */
+    const prevButton = document.getElementById("workPrevButton");
+    const nextButton = document.getElementById("workNextButton");
   
     /* Motion preference is used only to decide whether centering animates smoothly */
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -31,8 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const middleStart = originalCount;
     const middleEnd = originalCount * 2;
   
-    /* Small utilities used by several interaction modes */
-    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    /* Utility per l'indice circolare del loop infinito */
+    const getLoopedIndex = (index) => {
+        const total = cards.length;
+        return ((index % total) + total) % total;
+    };
   
     const centerCard = (card, smooth) => {
       const left = card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2;
@@ -114,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
     /* Scroll settling waits briefly so smooth scroll, wheel, and drag all share one end-state */
     let scrollEndTimer = 0;
-    let wheelLock = false;
   
     const settleAfterScroll = () => {
         window.clearTimeout(scrollEndTimer);
@@ -132,8 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
               centerCard(cards[nearestIndex], false);
             }
           });
-      
-          wheelLock = false;
         }, 140);
       };
   
@@ -169,111 +173,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
   
-    /* Convert vertical wheel intent into horizontal one-card stepping */
-    const wheelToPixels = (event) => {
-      if (event.deltaMode === 1) return event.deltaY * 16;
-      if (event.deltaMode === 2) return event.deltaY * scroller.clientWidth;
-      return event.deltaY;
-    };
-  
-    scroller.addEventListener(
-      "wheel",
-      (event) => {
-        if (event.ctrlKey) return;
-        if (scroller.scrollWidth <= scroller.clientWidth) return;
-  
-        const deltaY = wheelToPixels(event);
-        const deltaX = event.deltaX;
-        const dominantDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
-  
-        if (dominantDelta === 0) return;
-  
-        event.preventDefault();
-  
-        if (wheelLock) return;
-        wheelLock = true;
-  
-        if (activeIndex < 0) {
-          setActiveByIndex(getNearestIndex());
-        }
-  
-        const direction = dominantDelta > 0 ? 1 : -1;
-        const nextIndex = clamp(activeIndex + direction, 0, cards.length - 1);
-  
+    /* Navigazione a step per pulsanti desktop e frecce tastiera */
+    const stepCarousel = (direction) => {
+        const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
+        const nextIndex = getLoopedIndex(currentIndex + direction);
+    
         setActiveByIndex(nextIndex);
         centerCard(cards[nextIndex], !prefersReduced.matches);
-        settleAfterScroll();
-      },
-      { passive: false }
-    );
-  
-    /* Pointer dragging preserves the existing desktop interaction without changing link behavior */
-    let isPointerDown = false;
-    let startX = 0;
-    let startScrollLeft = 0;
-    let moved = false;
-  
-    scroller.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
-  
-      isPointerDown = true;
-      moved = false;
-      startX = event.clientX;
-      startScrollLeft = scroller.scrollLeft;
-  
-      scroller.classList.add("is-dragging");
-      scroller.setPointerCapture(event.pointerId);
-    });
-  
-    scroller.addEventListener("pointermove", (event) => {
-      if (!isPointerDown) return;
-  
-      const deltaX = event.clientX - startX;
-  
-      if (Math.abs(deltaX) > 8) {
-        moved = true;
-      }
-  
-      scroller.scrollLeft = startScrollLeft - deltaX;
-    });
-  
-    const endDrag = () => {
-      if (!isPointerDown) return;
-  
-      isPointerDown = false;
-      scroller.classList.remove("is-dragging");
-  
-      const nearestIndex = getNearestIndex();
-      setActiveByIndex(nearestIndex);
-      centerCard(cards[nearestIndex], !prefersReduced.matches);
-  
-      onScroll();
     };
-  
-    scroller.addEventListener("pointerup", endDrag);
-    scroller.addEventListener("pointercancel", endDrag);
-  
-    scroller.addEventListener(
-      "click",
-      (event) => {
-        if (!moved) return;
-        event.preventDefault();
-        event.stopPropagation();
-      },
-      true
-    );
-  
-    /* Keyboard navigation still snaps one card at a time from the current centered item */
+
+    /* Tastiera desktop: una card per volta, con loop infinito */
     scroller.addEventListener("keydown", (event) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-  
-      const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
-      const direction = event.key === "ArrowRight" ? 1 : -1;
-      const nextIndex = clamp(currentIndex + direction, 0, cards.length - 1);
-  
-      setActiveByIndex(nextIndex);
-      centerCard(cards[nextIndex], !prefersReduced.matches);
-      event.preventDefault();
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    
+        stepCarousel(event.key === "ArrowRight" ? 1 : -1);
+        event.preventDefault();
+    });
+
+    /* Pulsanti desktop sempre abilitati */
+    prevButton?.addEventListener("click", () => {
+        stepCarousel(-1);
+    });
+    
+    nextButton?.addEventListener("click", () => {
+        stepCarousel(1);
     });
   
     /* Initial positioning centers the configured starting card inside the middle clone set */
