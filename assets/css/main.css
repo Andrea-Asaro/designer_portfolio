@@ -91,17 +91,23 @@
       );
   }
   
-  /* Active card:
-     the card becomes physically larger in width and the image becomes taller too,
-     matching the reference composition more closely */
-  .work-card.is-active {
+    /* Active card:
+   the card grows in the layout, but the carousel area below gets a stable reserved height */
+   .work-card.is-active {
     width: clamp(275px, 22vw, 360px);
     flex-basis: clamp(275px, 22vw, 360px);
-    margin-inline: clamp(0px, 1.8vw, 0px);
+    margin-inline: 0;
   }
   
+  /* The active media can still become taller, but the section will no longer push the footer up/down */
   .work-card.is-active .work-media {
     height: clamp(250px, 28vw, 500px);
+  }
+  
+  /* Reserve enough vertical space for the tallest active card + its meta block,
+     so the title/footer position stays visually fixed */
+  .work-scroller {
+    min-height: 630px;
   }
   
   /* Respect reduced-motion while preserving layout and functionality */
