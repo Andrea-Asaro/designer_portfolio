@@ -3,7 +3,9 @@
     --bg: #ffffff;
     --text: #0b0b0b;
     --hairline: rgba(11, 11, 11, 0.1);
-    --thumb-w: clamp(180px, 18vw, 240px);
+    --thumb-w: clamp(210px, 16vw, 255px);
+    --thumb-w-active: clamp(300px, 23vw, 365px);
+    --poster-ratio: 5 / 7;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
   
@@ -36,11 +38,21 @@
     outline-offset: 3px;
   }
   
-  /* Hide native scrollbar while keeping horizontal scroll behavior intact */
   .work-scroller {
-    min-height: 630px;
+    /* Altezza fissa ma fluida:
+       - mobile: abbastanza compatta da non mangiare troppo viewport
+       - desktop: abbastanza alta da contenere la tile attiva più grande
+    */
+    --carousel-h: clamp(420px, 62svh, 720px);
+  
+    height: var(--carousel-h);
+    min-height: var(--carousel-h);
+    max-height: var(--carousel-h);
+  
     overflow-x: hidden;
+    overflow-y: hidden;
     scrollbar-width: none;
+    align-items: flex-start;
   }
   
     /* Reserve enough vertical space for the tallest active card + its meta block,
@@ -92,11 +104,19 @@
 
   /* Meta hover/focus lift stays custom because it is tied to nested link state */
   .work-meta {
+    flex: 0 0 auto;
     transform: translateY(0);
     transition: transform 220ms var(--ease);
     will-change: transform;
   }
   
+  .work-link {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+
   .work-link:hover .work-meta,
   .work-link:focus-visible .work-meta {
     transform: translateY(-4px);
@@ -107,20 +127,26 @@
    .work-card {
     width: var(--thumb-w);
     flex: 0 0 var(--thumb-w);
+    flex-basis: var(--thumb-w);
+    display: flex;
     transition:
       flex-basis 520ms var(--ease),
       width 520ms var(--ease),
       margin 520ms var(--ease);
     will-change: width, flex-basis, margin;
+    align-self: flex-start;
   }
   
-  /* Media tiles:
-     keep the visual background logic, but animate height instead of scale */
   .work-media {
-    height: clamp(220px, 22vw, 320px);
-    transition: height 520ms var(--ease);
-    will-change: height;
-    clip-path: inset(0);
+    width: 100%;
+    aspect-ratio: var(--poster-ratio);
+    min-height: 0;
+    height: auto;
+    transition: transform 520ms var(--ease);
+    will-change: transform;
+    transform: scale(1);
+    transform-origin: center center;
+    clip-path: inset(0 round 0);
     background:
       radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 52%),
       linear-gradient(
@@ -133,14 +159,15 @@
     /* Active card:
    the card grows in the layout, but the carousel area below gets a stable reserved height */
    .work-card.is-active {
-    width: clamp(275px, 22vw, 360px);
-    flex-basis: clamp(275px, 22vw, 360px);
+    width: var(--thumb-w-active);
+    flex-basis: var(--thumb-w-active);
     margin-inline: 0;
   }
   
-  /* The active media can still become taller, but the section will no longer push the footer up/down */
+
   .work-card.is-active .work-media {
-    height: clamp(250px, 28vw, 500px);
+    /* Crescita visiva senza alterare l'altezza del carosello */
+    transform: scale(1.035);
   }
   
   /* Respect reduced-motion while preserving layout and functionality */
@@ -151,5 +178,15 @@
     .work-media,
     .carousel-nav-button {
       transition: none !important;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .work-scroller {
+      --carousel-h: clamp(320px, 50svh, 500px);
+    }
+  
+    .work-card.is-active .work-media {
+      transform: scale(1.02);
     }
   }
