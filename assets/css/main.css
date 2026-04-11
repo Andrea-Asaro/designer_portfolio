@@ -43,7 +43,7 @@
      mobile will override sizing and spacing below */
   .work-scroller {
     --carousel-h: clamp(420px, 62svh, 720px);
-    --card-gap: clamp(14px, 1.6vw, 24px);
+    --card-gap: clamp(14px, 1.6vw, 22px);
   
     height: var(--carousel-h);
     min-height: var(--carousel-h);
@@ -123,29 +123,24 @@
     transform: translateY(-4px);
   }
   
-  /* Desktop/base card sizing:
-     width grows in layout only on larger screens */
-  .work-card {
-    width: var(--thumb-w);
-    flex: 0 0 var(--thumb-w);
+/* Desktop: footprint fisso, crescita solo visiva */
+.work-card {
+    width: var(--thumb-w-active);
+    flex: 0 0 var(--thumb-w-active);
     display: flex;
-    transition:
-      flex-basis 520ms var(--ease),
-      width 520ms var(--ease),
-      margin 520ms var(--ease);
-    will-change: width, flex-basis, margin;
     align-self: flex-start;
+    --card-progress: 0;
   }
   
+  /* Media: scala guidata dallo scroll, senza reflow di layout */
   .work-media {
     width: 100%;
     aspect-ratio: var(--poster-ratio);
     min-height: 0;
     height: auto;
-    transition: transform 520ms var(--ease);
     will-change: transform;
-    transform: scale(1);
     transform-origin: center center;
+    transform: scale(calc(0.82 + (0.215 * var(--card-progress))));
     clip-path: inset(0 round 0);
     background:
       radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 52%),
@@ -156,11 +151,10 @@
       );
   }
   
-  /* Desktop active state only */
+  /* Stato attivo: resta come stato logico, ma non cambia più il layout */
   .work-card.is-active {
     width: var(--thumb-w-active);
     flex-basis: var(--thumb-w-active);
-    margin-inline: 0;
   }
   
   .work-card.is-active .work-media {

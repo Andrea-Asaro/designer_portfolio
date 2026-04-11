@@ -1,5 +1,5 @@
 /* Carousel:
-   - desktop: infinite loop + active centered card that grows
+   - desktop: infinite loop + centered active card + smooth visual scaling driven by scroll
    - mobile: infinite loop + equal-width cards, no active scaling */
    document.addEventListener("DOMContentLoaded", () => {
     const scroller = document.getElementById("workScroller");
@@ -13,11 +13,14 @@
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobileQuery = window.matchMedia("(max-width: 860px)");
   
-    /* Build a seamless loop by cloning the original set before and after */
+    /* Original cards and initial target card */
     const originals = Array.from(scroller.querySelectorAll(".work-card"));
     const originalCount = originals.length;
     const initialIndex = originals.findIndex((card) => card.dataset.initial === "true");
   
+    if (!originalCount) return;
+  
+    /* Build a seamless infinite loop by cloning the original set before and after */
     const buildCloneSet = () =>
       originals.map((card) => {
         const clone = card.cloneNode(true);
@@ -34,38 +37,51 @@
     scroller.prepend(beforeFragment);
     scroller.append(afterFragment);
   
+    /* Cached card collections and loop boundaries */
     let cards = Array.from(scroller.querySelectorAll(".work-card"));
     const middleStart = originalCount;
     const middleEnd = originalCount * 2;
   
+    /* Internal state */
     let activeIndex = -1;
     let setWidth = 0;
     let scrollEndTimer = 0;
     let rafId = 0;
+    let resizeRafId = 0;
   
-    /* Helpers */
+    /* Utility: current breakpoint */
     const isMobile = () => mobileQuery.matches;
   
+    /* Utility: keep an index inside the virtual circular list */
     const getLoopedIndex = (index) => {
       const total = cards.length;
       return ((index % total) + total) % total;
     };
   
+    /* Utility: center a card in the viewport */
     const centerCard = (card, smooth) => {
+      if (!card) return;
+  
       const left = card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2;
-      scroller.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
+  
+      scroller.scrollTo({
+        left,
+        behavior: smooth ? "smooth" : "auto",
+      });
     };
   
+    /* Measure the width occupied by one full original set, including flex gap */
     const measureSetWidth = () => {
-      return cards.slice(middleStart, middleEnd).reduce((sum, card) => {
-        const styles = window.getComputedStyle(card);
-        const marginLeft = parseFloat(styles.marginLeft) || 0;
-        const marginRight = parseFloat(styles.marginRight) || 0;
-        const gapCompensation = 0;
-        return sum + card.offsetWidth + marginLeft + marginRight + gapCompensation;
-      }, 0);
+      const middleCards = cards.slice(middleStart, middleEnd);
+      if (!middleCards.length) return 0;
+  
+      const firstCard = middleCards[0];
+      const lastCard = middleCards[middleCards.length - 1];
+  
+      return lastCard.offsetLeft + lastCard.offsetWidth - firstCard.offsetLeft;
     };
   
+    /* Keep scroll position inside the middle copy so the loop feels endless */
     const normalizeLoop = () => {
       if (!setWidth) return;
   
@@ -78,17 +94,16 @@
       }
     };
   
+    /* Find the card whose center is closest to the scroller center */
     const getNearestIndex = () => {
-      const rect = scroller.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
+      const scrollerCenter = scroller.scrollLeft + scroller.clientWidth / 2;
   
       let bestIndex = 0;
       let bestDistance = Infinity;
   
       for (let i = 0; i < cards.length; i += 1) {
-        const cardRect = cards[i].getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        const distance = Math.abs(centerX - cardCenter);
+        const cardCenter = cards[i].offsetLeft + cards[i].offsetWidth / 2;
+        const distance = Math.abs(scrollerCenter - cardCenter);
   
         if (distance < bestDistance) {
           bestDistance = distance;
@@ -99,12 +114,13 @@
       return bestIndex;
     };
   
-    /* Desktop-only active state */
+    /* Active state is kept only as a semantic/state marker on desktop */
     const clearActiveStates = () => {
       cards.forEach((card) => card.classList.remove("is-active"));
       activeIndex = -1;
     };
   
+    /* Update the current desktop active card without triggering layout-based motion */
     const setActiveByIndex = (index) => {
       if (isMobile()) return;
       if (index === activeIndex) return;
@@ -120,9 +136,29 @@
       }
     };
   
-    /* Scroll settling:
-       mobile only normalizes loop and lets snap do the visual work;
-       desktop also maintains the active grown card */
+    /* Drive the visual scaling continuously based on distance from the center */
+    const updateCardProgress = () => {
+      if (!cards.length) return;
+  
+      if (isMobile()) {
+        cards.forEach((card) => card.style.setProperty("--card-progress", "0"));
+        return;
+      }
+  
+      const scrollerCenter = scroller.scrollLeft + scroller.clientWidth / 2;
+      const firstCardWidth = cards[0]?.offsetWidth || 0;
+      const maxDistance = scroller.clientWidth / 2 + firstCardWidth / 2;
+  
+      cards.forEach((card) => {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const distance = Math.abs(scrollerCenter - cardCenter);
+        const progress = Math.max(0, 1 - distance / maxDistance);
+  
+        card.style.setProperty("--card-progress", progress.toFixed(3));
+      });
+    };
+  
+    /* When scrolling settles, lock the semantic active card to the nearest centered one */
     const settleAfterScroll = () => {
       window.clearTimeout(scrollEndTimer);
   
@@ -133,53 +169,30 @@
   
         if (isMobile()) {
           clearActiveStates();
-          centerCard(cards[nearestIndex], false);
+          updateCardProgress();
           return;
         }
   
         setActiveByIndex(nearestIndex);
-  
-        window.requestAnimationFrame(() => {
-          if (cards[nearestIndex]) {
-            centerCard(cards[nearestIndex], false);
-          }
-        });
-      }, 120);
+        updateCardProgress();
+      }, 80);
     };
   
+    /* During scroll, keep the loop normalized and update scale smoothly in rAF */
     const onScroll = () => {
       if (rafId) return;
   
       rafId = window.requestAnimationFrame(() => {
         rafId = 0;
         normalizeLoop();
+        updateCardProgress();
         settleAfterScroll();
       });
     };
   
     scroller.addEventListener("scroll", onScroll, { passive: true });
   
-    /* Desktop-only recenter after active width transition */
-    scroller.addEventListener("transitionend", (event) => {
-      if (isMobile()) return;
-  
-      if (
-        !event.target.classList.contains("work-card") ||
-        (event.propertyName !== "width" && event.propertyName !== "flex-basis")
-      ) {
-        return;
-      }
-  
-      const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
-  
-      if (cards[currentIndex]) {
-        centerCard(cards[currentIndex], false);
-      }
-    });
-  
-    /* Step navigation:
-       desktop changes the active card;
-       mobile just moves one equal card at a time */
+    /* Step navigation moves exactly one card at a time */
     const stepCarousel = (direction) => {
       const currentIndex =
         !isMobile() && activeIndex >= 0 ? activeIndex : getNearestIndex();
@@ -193,7 +206,7 @@
       centerCard(cards[nextIndex], !prefersReduced.matches);
     };
   
-    /* Keyboard navigation */
+    /* Keyboard navigation for accessibility */
     scroller.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
   
@@ -201,6 +214,7 @@
       event.preventDefault();
     });
   
+    /* Button navigation */
     prevButton?.addEventListener("click", () => {
       stepCarousel(-1);
     });
@@ -209,9 +223,11 @@
       stepCarousel(1);
     });
   
-    /* Initial layout:
-       mobile starts centered with equal cards;
-       desktop starts centered with the configured active card */
+    /* Initial setup:
+       - center the requested initial card inside the middle set
+       - compute loop width
+       - set active state on desktop
+       - initialize scaling values */
     const init = () => {
       cards = Array.from(scroller.querySelectorAll(".work-card"));
       clearActiveStates();
@@ -227,14 +243,23 @@
       if (!isMobile()) {
         setActiveByIndex(getNearestIndex());
       }
+  
+      updateCardProgress();
     };
   
-    window.addEventListener("resize", () => {
-      window.requestAnimationFrame(init);
-    });
+    /* Resize handling is wrapped in rAF to avoid repeated heavy recalculations */
+    const onResize = () => {
+      if (resizeRafId) return;
   
+      resizeRafId = window.requestAnimationFrame(() => {
+        resizeRafId = 0;
+        init();
+      });
+    };
+  
+    window.addEventListener("resize", onResize);
     mobileQuery.addEventListener?.("change", init);
-    prefersReduced.addEventListener?.("change", onScroll);
+    prefersReduced.addEventListener?.("change", updateCardProgress);
   
     init();
   });
