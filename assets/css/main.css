@@ -38,37 +38,38 @@
     outline-offset: 3px;
   }
   
+  /* Carousel shell:
+     desktop keeps the reserved height for the larger active card;
+     mobile will override sizing and spacing below */
   .work-scroller {
-    /* Altezza fissa ma fluida:
-       - mobile: abbastanza compatta da non mangiare troppo viewport
-       - desktop: abbastanza alta da contenere la tile attiva più grande
-    */
     --carousel-h: clamp(420px, 62svh, 720px);
+    --card-gap: clamp(14px, 1.6vw, 24px);
   
     height: var(--carousel-h);
     min-height: var(--carousel-h);
     max-height: var(--carousel-h);
   
+    display: flex;
+    gap: var(--card-gap);
     overflow-x: hidden;
     overflow-y: hidden;
     scrollbar-width: none;
     align-items: flex-start;
   }
   
-    /* Reserve enough vertical space for the tallest active card + its meta block,
-    so the title/footer position stays visually fixed */
   .work-scroller::-webkit-scrollbar {
     display: none;
   }
-
+  
+  /* Coarse pointer devices can drag horizontally */
   @media (hover: none) and (pointer: coarse) {
     .work-scroller {
       overflow-x: auto;
     }
   }
   
-  /* Pulsanti carosello: stile leggero, sempre attivi, coerenti con il reference */
-.carousel-nav-button {
+  /* Carousel buttons */
+  .carousel-nav-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -101,8 +102,8 @@
     border-color: rgba(11, 11, 11, 0.22);
     transform: translateY(-1px);
   }
-
-  /* Meta hover/focus lift stays custom because it is tied to nested link state */
+  
+  /* Meta hover/focus animation */
   .work-meta {
     flex: 0 0 auto;
     transform: translateY(0);
@@ -116,18 +117,17 @@
     width: 100%;
     height: 100%;
   }
-
+  
   .work-link:hover .work-meta,
   .work-link:focus-visible .work-meta {
     transform: translateY(-4px);
   }
   
-/* Base card sizing:
-   the card now grows as part of the layout, not only via transform */
-   .work-card {
+  /* Desktop/base card sizing:
+     width grows in layout only on larger screens */
+  .work-card {
     width: var(--thumb-w);
     flex: 0 0 var(--thumb-w);
-    flex-basis: var(--thumb-w);
     display: flex;
     transition:
       flex-basis 520ms var(--ease),
@@ -156,37 +156,63 @@
       );
   }
   
-    /* Active card:
-   the card grows in the layout, but the carousel area below gets a stable reserved height */
-   .work-card.is-active {
+  /* Desktop active state only */
+  .work-card.is-active {
     width: var(--thumb-w-active);
     flex-basis: var(--thumb-w-active);
     margin-inline: 0;
   }
   
-
   .work-card.is-active .work-media {
-    /* Crescita visiva senza alterare l'altezza del carosello */
     transform: scale(1.035);
   }
   
-  /* Respect reduced-motion while preserving layout and functionality */
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .skip-link,
     .nav-link,
     .work-meta,
     .work-media,
+    .work-card,
     .carousel-nav-button {
       transition: none !important;
     }
   }
-
+  
+  /* Mobile carousel:
+     all cards have the same size, no active enlargement,
+     center card is snapped in the middle, adjacent cards peek on both sides */
   @media (max-width: 860px) {
-    .work-scroller {
-      --carousel-h: clamp(320px, 50svh, 500px);
+    :root {
+      --thumb-w: clamp(236px, 76vw, 310px);
     }
   
+    .work-scroller {
+      --carousel-h: clamp(430px, 68svh, 560px);
+      --card-gap: 2px;
+  
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-inline: calc(50% - (var(--thumb-w) / 2));
+      scroll-padding-inline: calc(50% - (var(--thumb-w) / 2));
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    .work-card,
+    .work-card.is-active {
+      width: var(--thumb-w);
+      flex: 0 0 var(--thumb-w);
+      margin-inline: 0;
+    }
+  
+    .work-media,
     .work-card.is-active .work-media {
-      transform: scale(1.02);
+      transform: none;
+    }
+  
+    .work-meta {
+      min-height: auto;
+      padding-bottom: 10px;
     }
   }

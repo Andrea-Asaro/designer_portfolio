@@ -1,16 +1,19 @@
-/* Carousel: infinite loop + centered active card scaling */
-document.addEventListener("DOMContentLoaded", () => {
+/* Carousel:
+   - desktop: infinite loop + active centered card that grows
+   - mobile: infinite loop + equal-width cards, no active scaling */
+   document.addEventListener("DOMContentLoaded", () => {
     const scroller = document.getElementById("workScroller");
     if (!scroller) return;
-
-    /* Controlli desktop del carosello */
+  
+    /* Desktop controls */
     const prevButton = document.getElementById("workPrevButton");
     const nextButton = document.getElementById("workNextButton");
   
-    /* Motion preference is used only to decide whether centering animates smoothly */
+    /* Motion and breakpoint queries */
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobileQuery = window.matchMedia("(max-width: 860px)");
   
-    /* Build a seamless loop by cloning the original card set before and after */
+    /* Build a seamless loop by cloning the original set before and after */
     const originals = Array.from(scroller.querySelectorAll(".work-card"));
     const originalCount = originals.length;
     const initialIndex = originals.findIndex((card) => card.dataset.initial === "true");
@@ -35,10 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const middleStart = originalCount;
     const middleEnd = originalCount * 2;
   
-    /* Utility per l'indice circolare del loop infinito */
+    let activeIndex = -1;
+    let setWidth = 0;
+    let scrollEndTimer = 0;
+    let rafId = 0;
+  
+    /* Helpers */
+    const isMobile = () => mobileQuery.matches;
+  
     const getLoopedIndex = (index) => {
-        const total = cards.length;
-        return ((index % total) + total) % total;
+      const total = cards.length;
+      return ((index % total) + total) % total;
     };
   
     const centerCard = (card, smooth) => {
@@ -46,29 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
       scroller.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
     };
   
-    /* Width is measured on the original middle set so loop normalization stays stable */
-    let activeIndex = -1;
-    let setWidth = 0;
-  
     const measureSetWidth = () => {
-      const previousActive = activeIndex;
-  
-      if (previousActive >= 0 && cards[previousActive]) {
-        cards[previousActive].classList.remove("is-active");
-      }
-  
-      const width = cards.slice(middleStart, middleEnd).reduce((sum, card) => {
+      return cards.slice(middleStart, middleEnd).reduce((sum, card) => {
         const styles = window.getComputedStyle(card);
         const marginLeft = parseFloat(styles.marginLeft) || 0;
         const marginRight = parseFloat(styles.marginRight) || 0;
-        return sum + card.offsetWidth + marginLeft + marginRight;
+        const gapCompensation = 0;
+        return sum + card.offsetWidth + marginLeft + marginRight + gapCompensation;
       }, 0);
-  
-      if (previousActive >= 0 && cards[previousActive]) {
-        cards[previousActive].classList.add("is-active");
-      }
-  
-      return width;
     };
   
     const normalizeLoop = () => {
@@ -83,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   
-    /* Active-card detection is based on the card nearest to the viewport center */
     const getNearestIndex = () => {
       const rect = scroller.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -105,7 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return bestIndex;
     };
   
+    /* Desktop-only active state */
+    const clearActiveStates = () => {
+      cards.forEach((card) => card.classList.remove("is-active"));
+      activeIndex = -1;
+    };
+  
     const setActiveByIndex = (index) => {
+      if (isMobile()) return;
       if (index === activeIndex) return;
   
       if (activeIndex >= 0 && cards[activeIndex]) {
@@ -119,30 +120,32 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   
-    /* Scroll settling waits briefly so smooth scroll, wheel, and drag all share one end-state */
-    let scrollEndTimer = 0;
-  
+    /* Scroll settling:
+       mobile only normalizes loop and lets snap do the visual work;
+       desktop also maintains the active grown card */
     const settleAfterScroll = () => {
-        window.clearTimeout(scrollEndTimer);
-      
-        scrollEndTimer = window.setTimeout(() => {
-          normalizeLoop();
-      
-          const nearestIndex = getNearestIndex();
-          setActiveByIndex(nearestIndex);
-      
-          /* La card attiva ora cambia dimensione reale nel layout:
-             dopo l'assegnazione della classe la ricentriamo una seconda volta */
-          window.requestAnimationFrame(() => {
-            if (cards[nearestIndex]) {
-              centerCard(cards[nearestIndex], false);
-            }
-          });
-        }, 140);
-      };
+      window.clearTimeout(scrollEndTimer);
   
-    /* Scroll work is throttled into rAF to avoid excessive layout reads */
-    let rafId = 0;
+      scrollEndTimer = window.setTimeout(() => {
+        normalizeLoop();
+  
+        const nearestIndex = getNearestIndex();
+  
+        if (isMobile()) {
+          clearActiveStates();
+          centerCard(cards[nearestIndex], false);
+          return;
+        }
+  
+        setActiveByIndex(nearestIndex);
+  
+        window.requestAnimationFrame(() => {
+          if (cards[nearestIndex]) {
+            centerCard(cards[nearestIndex], false);
+          }
+        });
+      }, 120);
+    };
   
     const onScroll = () => {
       if (rafId) return;
@@ -155,53 +158,63 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   
     scroller.addEventListener("scroll", onScroll, { passive: true });
-
-    /* Quando la card attiva finisce di cambiare width/flex-basis,
-   il suo centro geometrico può spostarsi: la ricentriamo */
+  
+    /* Desktop-only recenter after active width transition */
     scroller.addEventListener("transitionend", (event) => {
-        if (
+      if (isMobile()) return;
+  
+      if (
         !event.target.classList.contains("work-card") ||
         (event.propertyName !== "width" && event.propertyName !== "flex-basis")
-        ) {
+      ) {
         return;
-        }
-    
-        const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
-    
-        if (cards[currentIndex]) {
+      }
+  
+      const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
+  
+      if (cards[currentIndex]) {
         centerCard(cards[currentIndex], false);
-        }
+      }
     });
   
-    /* Navigazione a step per pulsanti desktop e frecce tastiera */
+    /* Step navigation:
+       desktop changes the active card;
+       mobile just moves one equal card at a time */
     const stepCarousel = (direction) => {
-        const currentIndex = activeIndex >= 0 ? activeIndex : getNearestIndex();
-        const nextIndex = getLoopedIndex(currentIndex + direction);
-    
+      const currentIndex =
+        !isMobile() && activeIndex >= 0 ? activeIndex : getNearestIndex();
+  
+      const nextIndex = getLoopedIndex(currentIndex + direction);
+  
+      if (!isMobile()) {
         setActiveByIndex(nextIndex);
-        centerCard(cards[nextIndex], !prefersReduced.matches);
+      }
+  
+      centerCard(cards[nextIndex], !prefersReduced.matches);
     };
-
-    /* Tastiera desktop: una card per volta, con loop infinito */
+  
+    /* Keyboard navigation */
     scroller.addEventListener("keydown", (event) => {
-        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    
-        stepCarousel(event.key === "ArrowRight" ? 1 : -1);
-        event.preventDefault();
-    });
-
-    /* Pulsanti desktop sempre abilitati */
-    prevButton?.addEventListener("click", () => {
-        stepCarousel(-1);
-    });
-    
-    nextButton?.addEventListener("click", () => {
-        stepCarousel(1);
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  
+      stepCarousel(event.key === "ArrowRight" ? 1 : -1);
+      event.preventDefault();
     });
   
-    /* Initial positioning centers the configured starting card inside the middle clone set */
+    prevButton?.addEventListener("click", () => {
+      stepCarousel(-1);
+    });
+  
+    nextButton?.addEventListener("click", () => {
+      stepCarousel(1);
+    });
+  
+    /* Initial layout:
+       mobile starts centered with equal cards;
+       desktop starts centered with the configured active card */
     const init = () => {
       cards = Array.from(scroller.querySelectorAll(".work-card"));
+      clearActiveStates();
       setWidth = measureSetWidth();
   
       const fallbackIndex = Math.floor(originalCount / 2);
@@ -210,13 +223,17 @@ document.addEventListener("DOMContentLoaded", () => {
       scroller.scrollLeft = setWidth;
       centerCard(cards[targetIndex], false);
       normalizeLoop();
-      setActiveByIndex(getNearestIndex());
+  
+      if (!isMobile()) {
+        setActiveByIndex(getNearestIndex());
+      }
     };
   
     window.addEventListener("resize", () => {
       window.requestAnimationFrame(init);
     });
   
+    mobileQuery.addEventListener?.("change", init);
     prefersReduced.addEventListener?.("change", onScroll);
   
     init();
