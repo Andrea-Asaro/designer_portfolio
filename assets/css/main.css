@@ -38,12 +38,15 @@
     outline-offset: 3px;
   }
   
-  /* Carousel shell:
-       desktop keeps the reserved height for the larger active card;
-       mobile will override sizing and spacing below */
-  .work-scroller {
-    --carousel-h: clamp(420px, 62svh, 720px);
+/* Carousel shell:
+   the full card (meta + poster) always fits inside a viewport-based stage */
+   .work-scroller {
+    --carousel-h: clamp(360px, 60svh, 640px);
+    --meta-h: clamp(88px, 8.5vh, 108px);
     --card-gap: clamp(14px, 1.6vw, 22px);
+    --active-scale: 1.035;
+    --poster-h: calc((var(--carousel-h) - var(--meta-h)) / var(--active-scale));
+    --poster-w: calc(var(--poster-h) * 0.7143);
   
     height: var(--carousel-h);
     min-height: var(--carousel-h);
@@ -103,9 +106,12 @@
     transform: translateY(-1px);
   }
   
-  /* Meta hover/focus animation */
-  .work-meta {
-    flex: 0 0 auto;
+/* Meta block:
+   reserves a fixed vertical slot so the full card never exceeds the stage height */
+   .work-meta {
+    flex: 0 0 var(--meta-h);
+    min-height: var(--meta-h);
+    padding-bottom: 14px;
     transform: translateY(0);
     transition: transform 220ms var(--ease);
     will-change: transform;
@@ -123,21 +129,23 @@
     transform: translateY(-4px);
   }
   
-  /* Desktop: footprint fisso, crescita solo visiva */
-  .work-card {
-    width: var(--thumb-w-active);
-    flex: 0 0 var(--thumb-w-active);
+/* Desktop footprint:
+   card width now follows the available poster height instead of staying too large */
+   .work-card {
+    width: var(--poster-w);
+    flex: 0 0 var(--poster-w);
     display: flex;
     align-self: flex-start;
     --card-progress: 0;
   }
   
-  /* Contenitore media: mantiene proporzioni e clipping per le immagini reali */
-  .work-media {
+/* Media box:
+   its height is derived from the stage, so image + meta always stay fully visible */
+   .work-media {
     width: 100%;
+    height: var(--poster-h);
     aspect-ratio: var(--poster-ratio);
     min-height: 0;
-    height: auto;
     overflow: hidden;
     will-change: transform;
     transform-origin: center center;
@@ -154,10 +162,11 @@
     object-fit: cover;
   }
   
-  /* Stato attivo: resta come stato logico, ma non cambia più il layout */
-  .work-card.is-active {
-    width: var(--thumb-w-active);
-    flex-basis: var(--thumb-w-active);
+/* Active state:
+   remains visual only and no longer changes layout dimensions */
+   .work-card.is-active {
+    width: var(--poster-w);
+    flex-basis: var(--poster-w);
   }
   
   .work-card.is-active .work-media {
@@ -243,6 +252,19 @@
       overflow: hidden;
     }
   }
+
+  /* Short desktop viewports:
+   slightly compresses vertical spacing so carousel and wordmark stay better balanced */
+@media (min-width: 861px) and (max-height: 860px) {
+    main > section[aria-label="Progetti selezionati"] {
+      margin-top: clamp(18px, 3.5vh, 32px);
+    }
+  
+    footer[aria-label="Titolo portfolio"] {
+      padding-top: clamp(20px, 4vh, 40px);
+      padding-bottom: clamp(10px, 2vh, 18px);
+    }
+  }
   
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
@@ -258,17 +280,16 @@
     }
   }
   
-  /* Mobile carousel:
-       all cards have the same size, no active enlargement,
-       center card is snapped in the middle, adjacent cards peek on both sides */
-  @media (max-width: 860px) {
-    :root {
-      --thumb-w: clamp(236px, 76vw, 310px);
-    }
-  
+/* Mobile carousel:
+   keeps a viewport-based stage and derives equal card size from the available height */
+   @media (max-width: 860px) {
     .work-scroller {
-      --carousel-h: clamp(430px, 68svh, 560px);
+      --carousel-h: clamp(390px, 60svh, 520px);
+      --meta-h: clamp(82px, 18vw, 98px);
       --card-gap: 2px;
+      --active-scale: 1;
+      --poster-h: calc(var(--carousel-h) - var(--meta-h));
+      --thumb-w: calc(var(--poster-h) * 0.7143);
   
       overflow-x: auto;
       overflow-y: hidden;
@@ -285,18 +306,25 @@
       margin-inline: 0;
     }
   
-    /* Mobile: impedisce allo swipe di saltare più tile nello stesso gesto */
+    /* Mobile snap:
+       forces one clear stop per card while swiping */
     .work-card {
       scroll-snap-stop: always;
     }
   
+    /* Mobile media:
+       disables active enlargement and keeps all tiles equal */
     .work-media,
     .work-card.is-active .work-media {
+      height: var(--poster-h);
       transform: none;
     }
   
+    /* Mobile meta:
+       keeps the heading block inside the same fixed stage */
     .work-meta {
-      min-height: auto;
+      flex-basis: var(--meta-h);
+      min-height: var(--meta-h);
       padding-bottom: 10px;
     }
   }
