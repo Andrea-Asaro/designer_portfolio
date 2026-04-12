@@ -41,7 +41,7 @@
 /* Carousel shell:
    the full card (meta + poster) always fits inside a viewport-based stage */
    .work-scroller {
-    --carousel-h: clamp(360px, 65svh, 640px);
+    --carousel-h: clamp(360px, 66svh, 640px);
     --meta-h: clamp(88px, 8.5vh, 108px);
     --card-gap: clamp(14px, 1.6vw, 22px);
     --active-scale: 1.035;
