@@ -7,6 +7,7 @@
     --thumb-w-active: clamp(300px, 23vw, 365px);
     --poster-ratio: 5 / 7;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --tile-scale: 0.98;
   }
   
   *,
@@ -39,13 +40,15 @@
   }
   
 /* Carousel shell:
-   the full card (meta + poster) always fits inside a viewport-based stage */
+   mantengo identica l'altezza dello stage, ma riduco leggermente il poster
+   così ogni tile respira di più dentro il suo spazio ed eviti overflow verticali */
    .work-scroller {
     --carousel-h: clamp(360px, 69svh, 640px);
     --meta-h: clamp(88px, 8.5vh, 108px);
     --card-gap: clamp(14px, 1.6vw, 22px);
-    --active-scale: 1.035;
-    --poster-h: calc((var(--carousel-h) - var(--meta-h)) / var(--active-scale));
+    --active-scale: 1.02;
+    --poster-h-base: calc((var(--carousel-h) - var(--meta-h)) / var(--active-scale));
+    --poster-h: calc(var(--poster-h-base) * var(--tile-scale));
     --poster-w: calc(var(--poster-h) * 0.7143);
   
     height: var(--carousel-h);
@@ -283,21 +286,25 @@
 /* Mobile carousel:
    keeps a viewport-based stage and derives equal card size from the available height */
    @media (max-width: 860px) {
-    .work-scroller {
-      --carousel-h: clamp(390px, 60svh, 520px);
-      --meta-h: clamp(82px, 18vw, 98px);
-      --card-gap: 2px;
-      --active-scale: 1;
-      --poster-h: calc(var(--carousel-h) - var(--meta-h));
-      --thumb-w: calc(var(--poster-h) * 0.7143);
+/* Mobile carousel:
+   applico la stessa riduzione anche su mobile, lasciando però invariata
+   l'altezza del contenitore del carosello */
+   .work-scroller {
+    --carousel-h: clamp(390px, 60svh, 520px);
+    --meta-h: clamp(82px, 18vw, 98px);
+    --card-gap: 2px;
+    --active-scale: 1;
+    --poster-h-base: calc(var(--carousel-h) - var(--meta-h));
+    --poster-h: calc(var(--poster-h-base) * var(--tile-scale));
+    --thumb-w: calc(var(--poster-h) * 0.7143);
   
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-inline: calc(50% - (var(--thumb-w) / 2));
-      scroll-padding-inline: calc(50% - (var(--thumb-w) / 2));
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-inline: calc(50% - (var(--thumb-w) / 2));
+    scroll-padding-inline: calc(50% - (var(--thumb-w) / 2));
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
   
     .work-card,
     .work-card.is-active {
