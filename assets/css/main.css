@@ -199,6 +199,11 @@
       flex: 0 0 var(--thumb-w);
       margin-inline: 0;
     }
+
+    /* Mobile: impedisce allo swipe di saltare più tile nello stesso gesto */
+    .work-card {
+        scroll-snap-stop: always;
+    }
   
     .work-media,
     .work-card.is-active .work-media {
