@@ -4,15 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Daddario Rosanna — Portfolio</title>
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
       rel="stylesheet"
-    />
-
+      />
     <!-- Tailwind CDN config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -35,74 +33,122 @@
         },
       };
     </script>
-
     <link rel="stylesheet" href="assets/css/main.css" />
     <script defer src="assets/js/main.js"></script>
   </head>
-
   <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
     <!-- Skip link -->
     <a
       class="skip-link absolute left-[clamp(16px,4vw,48px)] top-[10px] z-10 border border-hairline bg-white px-3 py-2 -translate-y-[160%] transition-transform duration-200 ease-editorial focus:translate-y-0"
       href="#content"
-    >
-      Vai al contenuto
+      >
+    Vai al contenuto
     </a>
-
     <!-- Page shell -->
     <div class="flex min-h-[100svh] flex-col">
       <!-- Header -->
       <header
         class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(12px,4vw,36px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
-      >
-        <div>
+        >
+        <!-- Header top row: desktop invariato, mobile con toggle "Menu" -->
+        <div class="flex items-start justify-between gap-4 min-[861px]:block">
           <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
-            Product, Retail and Exhibition Design
+          Product, Retail, Exhibition Design
           </span>
+          <button
+            id="mobileMenuButton"
+            type="button"
+            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink min-[861px]:hidden"
+            aria-controls="mobileMenu"
+            aria-expanded="false"
+            aria-label="Apri il menu"
+            >
+          Menu
+          </button>
         </div>
-
-        <nav aria-label="Navigazione principale">
+        <nav aria-label="Navigazione principale" class="hidden min-[861px]:block">
           <ul
             class="m-0 flex list-none flex-wrap items-center justify-start gap-[clamp(14px,2.2vw,28px)] p-0 min-[861px]:justify-center"
-          >
+            >
             <li>
               <a
                 href="index.html"
                 aria-current="page"
                 class="nav-link font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink"
-              >
-                Home
+                >
+              Home
               </a>
             </li>
             <li>
               <a
                 href="projects.html"
                 class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                Projects
+                >
+              Projects
               </a>
             </li>
             <li>
               <a
                 href="about.html"
                 class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                About
+                >
+              About
               </a>
             </li>
           </ul>
         </nav>
-
-        <div class="justify-self-start min-[861px]:justify-self-end">
+        <!-- Desktop contact link: nascosto su mobile -->
+        <div class="hidden min-[861px]:block min-[861px]:justify-self-end">
           <a
             class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
             href="contact.html"
-          >
-            Contact me
+            >
+          Contact me
           </a>
         </div>
       </header>
-
+      <!-- Mobile offcanvas menu: full screen, palette invertita -->
+      <div
+        id="mobileMenu"
+        class="mobile-menu min-[861px]:hidden"
+        aria-hidden="true"
+        >
+        <div class="mobile-menu__panel">
+          <div class="mobile-menu__top">
+            <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
+            Product, Retail, Exhibition Design
+            </span>
+            <button
+              id="mobileMenuCloseButton"
+              type="button"
+              class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]"
+              aria-label="Chiudi il menu"
+              >
+            Menu
+            </button>
+          </div>
+          <nav class="mobile-menu__nav" aria-label="Navigazione mobile">
+            <a href="index.html" aria-current="page" class="mobile-menu__link mobile-menu__link--current">
+            Home
+            </a>
+            <a href="projects.html" class="mobile-menu__link">
+            Projects
+            </a>
+            <a href="about.html" class="mobile-menu__link">
+            About
+            </a>
+            <a href="contact.html" class="mobile-menu__link mobile-menu__link--underlined">
+            Contact me
+            </a>
+          </nav>
+          <div class="mobile-menu__wordmark" aria-hidden="true">
+            <h1 class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.4rem,16vw,13rem)] leading-[0.82]">
+              <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
+              <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
+            </h1>
+          </div>
+        </div>
+      </div>
       <!-- Main content -->
       <main id="content" class="flex flex-1 flex-col">
         <!-- Horizontal work carousel -->
@@ -113,42 +159,39 @@
             tabindex="0"
             role="region"
             aria-label="Carousel progetti (scorri orizzontalmente)"
-          >
+            >
             <!-- Card 01 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-1.html" aria-label="Apri progetto 01: A Mare">
+              <a class="work-link block w-full" href="project-1.html" aria-label="Apri progetto 01: A Mare">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">01/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">A Mare</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[EXHIBITION DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">01/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">A'Mare</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[EXHIBITION DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/1_a_mare.jpg"
-                    alt="Preview progetto A Mare"
+                    alt="Preview progetto A'Mare"
                     loading="lazy"
                     width="700"
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 02 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-2.html" aria-label="Apri progetto 02: Beat Club Barilla">
+              <a class="work-link block w-full" href="project-2.html" aria-label="Apri progetto 02: Beat Club Barilla">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">02/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Beat Club Barilla</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[RETAIL DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">02/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Beat Club Barilla</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[RETAIL DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/2_beat_club_barilla.jpg"
                     alt="Preview progetto Beat Club Barilla"
@@ -157,21 +200,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 03 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-3.html" aria-label="Apri progetto 03: Coboxing">
+              <a class="work-link block w-full" href="project-3.html" aria-label="Apri progetto 03: Coboxing">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">03/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Coboxing</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[RETAIL DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">03/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Coboxing</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[RETAIL DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/3_coboxing.jpg"
                     alt="Preview progetto Coboxing"
@@ -180,21 +221,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 04 -->
             <article class="work-card shrink-0 snap-center" data-initial="true">
-                <a class="work-link block w-full" href="project-4.html" aria-label="Apri progetto 04: Flow">
+              <a class="work-link block w-full" href="project-4.html" aria-label="Apri progetto 04: Flow">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">04/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Flow</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PRDOUCT DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">04/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Flow</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PRDOUCT DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/4_flow.jpg"
                     alt="Preview progetto Flow"
@@ -203,21 +242,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 05 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-5.html" aria-label="Apri progetto 05: Transhuman">
+              <a class="work-link block w-full" href="project-5.html" aria-label="Apri progetto 05: Transhuman">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">05/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Transhuman</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[EXHIBITION DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">05/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Transhuman</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[EXHIBITION DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/5_transhuman.jpg"
                     alt="Preview progetto Transhuman"
@@ -226,21 +263,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 06 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-6.html" aria-label="Apri progetto 06: Subemersa">
+              <a class="work-link block w-full" href="project-6.html" aria-label="Apri progetto 06: Subemersa">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">06/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Subemersa</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[URBAN EXHIBITION DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">06/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Subemersa</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[URBAN EXHIBITION DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/6_subemersa.jpg"
                     alt="Preview progetto Subemersa"
@@ -249,21 +284,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 07 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-7.html" aria-label="Apri progetto 07: Gineceo">
+              <a class="work-link block w-full" href="project-7.html" aria-label="Apri progetto 07: Gineceo">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">07/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Gineceo</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[SPATIAL DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">07/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Gineceo</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[SPATIAL DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/7_gineceo.jpg"
                     alt="Preview progetto Gineceo"
@@ -272,21 +305,19 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
-            
             <!-- Card 08 -->
             <article class="work-card shrink-0 snap-center">
-                <a class="work-link block w-full" href="project-8.html" aria-label="Apri progetto 08: Radicale">
+              <a class="work-link block w-full" href="project-8.html" aria-label="Apri progetto 08: Radicale">
                 <header class="work-meta min-h-[clamp(86px,8vw,104px)] pb-[14px] font-sans">
-                    <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">08/</div>
-                    <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Radicale</h2>
-                    <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PRODUCT DESIGN]</div>
+                  <div class="text-[0.9rem] font-[650] tracking-[-0.01em]">08/</div>
+                  <h2 class="mb-[6px] mt-[10px] text-[1.02rem] font-[550] tracking-[-0.02em]">Radicale</h2>
+                  <div class="text-[0.9rem] tracking-[-0.01em] text-muted">[PRODUCT DESIGN]</div>
                 </header>
-            
                 <!-- Media card con immagine reale -->
                 <div class="work-media w-full">
-                    <img
+                  <img
                     class="work-media-img"
                     src="assets/img/8_radicale.jpg"
                     alt="Preview progetto Radicale"
@@ -295,10 +326,9 @@
                     height="980"
                     />
                 </div>
-                </a>
+              </a>
             </article>
           </div>
-
           <div class="hidden min-[861px]:flex items-center gap-3 px-[clamp(16px,4vw,48px)] pt-[10px]" aria-label="Controlli carosello">
             <button
               id="workPrevButton"
@@ -306,32 +336,29 @@
               class="carousel-nav-button"
               aria-controls="workScroller"
               aria-label="Progetto precedente"
-            >
+              >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M14.5 6.5L9 12l5.5 5.5" />
               </svg>
             </button>
-        
             <button
               id="workNextButton"
               type="button"
               class="carousel-nav-button"
               aria-controls="workScroller"
               aria-label="Progetto successivo"
-            >
+              >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M9.5 6.5L15 12l-5.5 5.5" />
               </svg>
             </button>
           </div>
-
         </section>
-
         <!-- Footer wordmark -->
         <footer
           class="mt-auto px-[clamp(16px,4vw,48px)] pb-[clamp(12px,4vw,20px)] pt-[clamp(30px,8vh,70px)]"
           aria-label="Titolo portfolio"
-        >
+          >
           <h1 class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.4rem,16vw,13rem)] leading-[0.82]">
             <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
             <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>

@@ -39,8 +39,8 @@
   }
   
   /* Carousel shell:
-     desktop keeps the reserved height for the larger active card;
-     mobile will override sizing and spacing below */
+       desktop keeps the reserved height for the larger active card;
+       mobile will override sizing and spacing below */
   .work-scroller {
     --carousel-h: clamp(420px, 62svh, 720px);
     --card-gap: clamp(14px, 1.6vw, 22px);
@@ -123,8 +123,8 @@
     transform: translateY(-4px);
   }
   
-/* Desktop: footprint fisso, crescita solo visiva */
-.work-card {
+  /* Desktop: footprint fisso, crescita solo visiva */
+  .work-card {
     width: var(--thumb-w-active);
     flex: 0 0 var(--thumb-w-active);
     display: flex;
@@ -132,8 +132,8 @@
     --card-progress: 0;
   }
   
-/* Contenitore media: mantiene proporzioni e clipping per le immagini reali */
-.work-media {
+  /* Contenitore media: mantiene proporzioni e clipping per le immagini reali */
+  .work-media {
     width: 100%;
     aspect-ratio: var(--poster-ratio);
     min-height: 0;
@@ -164,21 +164,103 @@
     transform: scale(1.035);
   }
   
+  /* Mobile offcanvas menu: pannello full-screen con palette invertita */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: var(--text);
+    color: var(--bg);
+    transform: translate3d(100%, 0, 0);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform 400ms var(--ease),
+      visibility 0ms linear 400ms;
+  }
+  
+  body.is-menu-open .mobile-menu {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform 400ms var(--ease),
+      visibility 0ms linear 0ms;
+  }
+  
+  /* Mobile offcanvas internals: top bar, vertical nav e wordmark ancorato in basso */
+  .mobile-menu__panel {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding:
+      clamp(12px, 4vw, 36px) clamp(16px, 4vw, 48px) clamp(12px, 4vw, 20px);
+  }
+  
+  .mobile-menu__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  
+  .mobile-menu__nav {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2vw, 16px);
+    margin-top: clamp(72px, 14vh, 128px);
+  }
+  
+  .mobile-menu__link {
+    width: fit-content;
+    font-family: "Geist", system-ui, -apple-system, "Segoe UI", "Roboto", "Arial", sans-serif;
+    font-size: clamp(2.2rem, 8vw, 2.8rem);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    color: var(--bg);
+  }
+  
+  .mobile-menu__link--current {
+    font-weight: 650;
+  }
+  
+  .mobile-menu__link--underlined {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+  }
+  
+  .mobile-menu__wordmark {
+    margin-top: auto;
+    padding-top: clamp(48px, 10vh, 96px);
+    color: var(--bg);
+  }
+  
+  /* Mobile only: blocca lo scroll della pagina quando il menu è aperto */
+  @media (max-width: 860px) {
+    body.is-menu-open {
+      overflow: hidden;
+    }
+  }
+  
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
+  
     .skip-link,
     .nav-link,
     .work-meta,
     .work-media,
     .work-card,
-    .carousel-nav-button {
+    .carousel-nav-button,
+    .mobile-menu {
       transition: none !important;
     }
   }
   
   /* Mobile carousel:
-     all cards have the same size, no active enlargement,
-     center card is snapped in the middle, adjacent cards peek on both sides */
+       all cards have the same size, no active enlargement,
+       center card is snapped in the middle, adjacent cards peek on both sides */
   @media (max-width: 860px) {
     :root {
       --thumb-w: clamp(236px, 76vw, 310px);
@@ -202,10 +284,10 @@
       flex: 0 0 var(--thumb-w);
       margin-inline: 0;
     }
-
+  
     /* Mobile: impedisce allo swipe di saltare più tile nello stesso gesto */
     .work-card {
-        scroll-snap-stop: always;
+      scroll-snap-stop: always;
     }
   
     .work-media,
