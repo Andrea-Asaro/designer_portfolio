@@ -39,6 +39,20 @@
     outline-offset: 3px;
   }
   
+  /* Contact mixed-font heading:
+   STIX has a smaller x-height than Geist, so this slightly enlarges
+   the serif words to match the sans words optically rather than mathematically */
+.contact-hero-alt {
+  display: inline-block;
+  font-family: "STIX Two Text", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.35em;
+  letter-spacing: -0.02em;
+  transform: translateY(0.01em);
+}
+
+
 /* Carousel shell:
    mantengo identica l'altezza dello stage, ma riduco leggermente il poster
    così ogni tile respira di più dentro il suo spazio ed eviti overflow verticali */
