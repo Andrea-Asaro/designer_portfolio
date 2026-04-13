@@ -144,18 +144,10 @@
 
           <!-- Mobile menu nav -->
           <nav class="mobile-menu__nav" aria-label="Navigazione mobile">
-            <a href="index.html" class="mobile-menu__link">
-              Home
-            </a>
-            <a href="projects.html" class="mobile-menu__link">
-              Projects
-            </a>
-            <a href="about.html" aria-current="page" class="mobile-menu__link mobile-menu__link--current">
-              About
-            </a>
-            <a href="contactMe.html" class="mobile-menu__link mobile-menu__link--underlined">
-              Contact me
-            </a>
+            <a href="index.html" class="mobile-menu__link">Home</a>
+            <a href="projects.html" class="mobile-menu__link">Projects</a>
+            <a href="about.html" aria-current="page" class="mobile-menu__link mobile-menu__link--current">About</a>
+            <a href="contactMe.html" class="mobile-menu__link mobile-menu__link--underlined">Contact me</a>
           </nav>
 
           <!-- Mobile wordmark -->
@@ -170,9 +162,9 @@
 
       <!-- Main content -->
       <main id="content" class="flex flex-1 flex-col">
-        <!-- About hero/content section -->
+        <!-- About content: desktop with left image, centered text, right spacer -->
         <section class="px-[clamp(16px,4vw,48px)] pt-[clamp(28px,7vh,68px)]">
-          <div class="grid gap-[clamp(28px,5vw,72px)] min-[1024px]:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.1fr)]">
+          <div class="grid gap-[clamp(28px,5vw,72px)] min-[1024px]:grid-cols-[minmax(180px,240px)_minmax(0,72ch)_minmax(180px,240px)] min-[1024px]:justify-center">
             <!-- Left visual placeholder -->
             <div class="min-[1024px]:sticky min-[1024px]:top-[clamp(24px,4vh,40px)] self-start">
               <div
@@ -181,86 +173,82 @@
               ></div>
             </div>
 
-            <!-- Right editorial text -->
-            <div class="max-w-[72ch]">
-
-              <h1 class="mt-[10px] max-w-[12ch] font-sans text-[clamp(2.5rem,6vw,5.4rem)] font-[650] leading-[0.92] tracking-[-0.05em]">
-                Rosanna Daddario
+            <!-- Center editorial text column -->
+            <div class="w-full max-w-[72ch] min-[1024px]:mx-auto">
+              <!-- About intro headline -->
+              <h1 class="mt-[10px] max-w-[16ch] font-sans text-[clamp(2.2rem,5.4vw,4.6rem)] font-[650] leading-[0.96] tracking-[-0.05em]">
+                MY <span class="font-serif italic normal-case font-normal tracking-[-0.02em]">work</span> MOVES ACROSS EXHIBITION DESIGN, MATERIAL RESEARCH, AND THE <span class="font-serif italic normal-case font-normal tracking-[-0.02em]">relationship</span> BETWEEN SPACE, BODY, AND PRACTICES
               </h1>
 
-              <div class="mt-[clamp(24px,4vw,36px)] space-y-[clamp(18px,2.4vw,24px)] text-[clamp(1.05rem,1.35vw,1.28rem)] leading-[1.72] tracking-[-0.01em] text-ink">
+              <!-- About body copy -->
+              <div class="mt-[clamp(24px,4vw,36px)] space-y-[clamp(18px,2.4vw,24px)] font-serif italic text-[clamp(1.05rem,1.35vw,1.28rem)] leading-[1.72] tracking-[-0.01em] text-ink">
                 <p>
-                  Hi, I’m Rosanna Daddario, 25 years old and I hold a Bachelor’s degree with honors in Industrial Design from the Polytechnic University of Bari.
-                  I am finishing the Master in Exhibition Design – IDEA – Architecture of Exhibit at the Polytechnic University of Milan, and I'm finalizing my thesis.
+                  Hi, I’m Rosanna, a designer from Bari, currently based in Milan.
+                  I hold a Bachelor’s degree with honors in Industrial Design and a Master’s degree in Exhibition Design from Politecnico di Milano (May 2026).
                 </p>
 
                 <p>
-                  Welcome to my Portfolio: I am excited to share with you my expressive world, rich in meaning, where I transform spaces and objects into engaging experiences and narrative stories.
-                  Each project within these pages reflects not only my passion for design, but also my drive to analyze and improve critical aspects of everyday life. Through meticulous attention to detail, innovative design concepts and a deep understanding of spatial dynamics, I create unique projects and living spaces that merge creativity, functionality, and aesthetics.
+                  Moving cities and starting over shaped the way I see design: I consider spaces as both functional systems and lived experiences, influencing how we feel, move, and connect.
                 </p>
 
                 <p>
-                  My works are also the result of my personality: I see myself as an open-minded person, eager to communicate and exchange ideas. At the same time, I have a strong aptitude for leadership and problem solving, consistent with my organizational skills and high resilience under pressure.
+                  I design narrative environments where every element plays a role in shaping a larger story, with a focus on everyday needs and meaningful interactions.
                 </p>
 
                 <p>
-                  The selection of projects also aims to demonstrate my educational journey and versatility, which I believe are essential for comprehensive design practice, cultural enrichment, and adaptability to different working contexts.
-                </p>
-
-                <p>
-                  I hope that throughout this visual journey, every project will tell you a story—and every story will be an experience.
+                  This portfolio reflects my journey and my way of thinking through design.
                 </p>
               </div>
 
-              <!-- skills section -->
+              <!-- Skills section -->
               <section class="mt-[clamp(44px,7vw,72px)] border-t border-hairline pt-[clamp(22px,3vw,30px)]" aria-labelledby="skills-title">
-
+                <!-- Skills heading and intro -->
                 <h2
                   id="skills-title"
-                  class="mt-[10px] font-sans text-[clamp(1.9rem,4vw,3rem)] font-[650] leading-[0.96] tracking-[-0.04em]"
+                  class="mt-[10px] font-sans text-[clamp(1.9rem,4vw,3rem)] font-[650] uppercase leading-[0.96] tracking-[-0.04em]"
                 >
                   Skills and practice
                 </h2>
 
-                <p class="mt-[clamp(18px,2.5vw,22px)] max-w-[68ch] text-[clamp(1.05rem,1.35vw,1.2rem)] leading-[1.72] tracking-[-0.01em]">
-                  I am determined to broaden my knowledge and skills in my field. Throughout my career, I have acquired a range of abilities that I continue to refine and develop.
+                <p class="mt-[clamp(18px,2.5vw,22px)] max-w-[68ch] font-serif italic text-[clamp(1.05rem,1.35vw,1.2rem)] leading-[1.72] tracking-[-0.01em] text-ink">
+                  A focused set of tools and practices that support the development, communication, and atmosphere of each project.
                 </p>
 
+                <!-- Skills list -->
                 <div class="mt-[clamp(24px,3vw,34px)] grid gap-[clamp(18px,2vw,24px)]">
-                  <!-- Service item 01 -->
                   <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] tracking-[-0.02em]">Modeling and Prototyping</h3>
-                    <p class="mt-[8px] text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
-                      Solid expertise in the use of Rhinoceros for 3D modeling, which I apply to the development of complex forms, precise surfaces and accurate prototypes, always with careful attention to detail.
+                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em]">[Modeling &amp; Prototyping]</h3>
+                    <p class="mt-[8px] font-serif italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
+                      3D modeling in Rhinoceros for complex geometries and prototype development workflows.
                     </p>
                   </article>
 
-                  <!-- Service item 02 -->
                   <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] tracking-[-0.02em]">CAD Design</h3>
-                    <p class="mt-[8px] text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
-                      Excellent command of CAD design, used to develop precise technical drawings that support both production processes and project communication.
+                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em]">[CAD Design]</h3>
+                    <p class="mt-[8px] font-serif italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
+                      Technical drawings and construction details supporting design development and production processes.
                     </p>
                   </article>
 
-                  <!-- Service item 03 -->
                   <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] tracking-[-0.02em]">Rendering</h3>
-                    <p class="mt-[8px] text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
-                      Experience in creating photorealistic renderings with Enscape, used to effectively communicate design concepts, materials and visual atmospheres, followed by careful post-production work.
+                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em]">[Rendering]</h3>
+                    <p class="mt-[8px] font-serif italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
+                      Visualisation in Enscape with post-production focused on materials, light, and atmosphere.
                     </p>
                   </article>
 
-                  <!-- Service item 04 -->
                   <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] tracking-[-0.02em]">Visual Communication</h3>
-                    <p class="mt-[8px] text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
-                      Skills in visual communication, developed through the use of the Adobe Suite to create effective graphics, visual identities and presentation materials that are clear and consistent with the project’s identity.
+                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em]">[Visual Communication]</h3>
+                    <p class="mt-[8px] font-serif italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.7] tracking-[-0.01em] text-ink">
+                      Graphic design and visual systems using Adobe Suite for project presentations and identity development.
                     </p>
                   </article>
                 </div>
               </section>
             </div>
+
+            <!-- Right balancing spacer -->
+            <div class="hidden min-[1024px]:block" aria-hidden="true"></div>
           </div>
         </section>
 
