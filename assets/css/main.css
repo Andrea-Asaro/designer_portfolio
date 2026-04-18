@@ -83,7 +83,7 @@
 @media (min-width: 861px) {
   .work-scroller {
     --desktop-media-scale: 1.035;
-    --desktop-bottom-gap: clamp(4px, 0.8vh, 8px);
+    --desktop-bottom-gap: clamp(0px, 0.35vh, 4px);
 
     height: calc(
       var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
@@ -298,8 +298,8 @@
     }
   
     footer[aria-label="Titolo portfolio"] {
-      padding-top: clamp(20px, 4vh, 40px);
-      padding-bottom: clamp(10px, 2vh, 18px);
+      padding-top: clamp(8px, 1.8vh, 18px);
+      padding-bottom: clamp(8px, 1.8vh, 16px);
     }
   }
   
