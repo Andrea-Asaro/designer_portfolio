@@ -7,7 +7,7 @@
     --thumb-w-active: clamp(300px, 23vw, 365px);
     --poster-ratio: 5 / 7;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --tile-scale: 0.98;
+    --tile-scale: 0.9;
   }
   
   *,
@@ -76,6 +76,26 @@
     scrollbar-width: none;
     align-items: flex-start;
   }
+
+  /* Desktop stage:
+   quando riduci --tile-scale, anche l'altezza del carosello si restringe
+   seguendo la tile reale, lasciando sotto solo un margine minimo di sicurezza */
+@media (min-width: 861px) {
+  .work-scroller {
+    --desktop-media-scale: 1.035;
+    --desktop-bottom-gap: clamp(4px, 0.8vh, 8px);
+
+    height: calc(
+      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
+    );
+    min-height: calc(
+      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
+    );
+    max-height: calc(
+      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
+    );
+  }
+}
   
   .work-scroller::-webkit-scrollbar {
     display: none;
@@ -94,9 +114,9 @@
     align-items: center;
     justify-content: center;
     width: 52px;
-    height: 52px;
+    height: 25px;
     padding: 0;
-    border: 1px solid rgba(11, 11, 11, 0.12);
+    /*border: 1px solid rgba(11, 11, 11, 0.12); */
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.9);
     color: rgba(11, 11, 11, 0.52);
