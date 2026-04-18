@@ -47,7 +47,7 @@
   font-family: "STIX Two Text", serif;
   font-style: italic;
   font-weight: 400;
-  font-size: 1.35em;
+  font-size: 1.5em;
   letter-spacing: -0.02em;
   transform: translateY(0.01em);
 }
@@ -58,7 +58,7 @@
    così ogni tile respira di più dentro il suo spazio ed eviti overflow verticali */
    .work-scroller {
     --carousel-h: clamp(360px, 69svh, 640px);
-    --meta-h: clamp(88px, 8.5vh, 108px);
+    --meta-h: clamp(86px, 7.5vh, 96px);
     --card-gap: clamp(14px, 1.6vw, 22px);
     --active-scale: 1.02;
     --poster-h-base: calc((var(--carousel-h) - var(--meta-h)) / var(--active-scale));
