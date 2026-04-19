@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="it" class="h-full">
+  <head>
+    <!-- Meta base -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Projects — Daddario Rosanna</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CDN config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      /* Tailwind theme extension */
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0b0b0b",
+              muted: "rgba(11, 11, 11, 0.48)",
+              hairline: "rgba(11, 11, 11, 0.1)",
+            },
+            fontFamily: {
+              sans: ["Geist", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+              serif: ['"STIX Two Text"', "serif"],
+            },
+            transitionTimingFunction: {
+              editorial: "cubic-bezier(0.22, 1, 0.36, 1)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- CSS e JS condivisi -->
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+
+  <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
+    <!-- Skip link -->
+    <a
+      class="skip-link absolute left-[clamp(16px,4vw,48px)] top-[10px] z-10 border border-hairline bg-white px-3 py-2 -translate-y-[160%] transition-transform duration-200 ease-editorial focus:translate-y-0"
+      href="#content"
+    >
+      Vai al contenuto
+    </a>
+
+    <!-- Page shell -->
+    <div class="flex min-h-[100svh] flex-col">
+      <!-- Header -->
+      <header
+        class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(12px,4vw,32px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
+      >
+        <!-- Header top row -->
+        <div class="flex items-start justify-between gap-4 min-[861px]:block">
+          <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
+            Exhibition / Spatial Design
+          </span>
+
+          <button
+            id="mobileMenuButton"
+            type="button"
+            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink min-[861px]:hidden"
+            aria-controls="mobileMenu"
+            aria-expanded="false"
+            aria-label="Apri il menu"
+          >
+            Menu
+          </button>
+        </div>
+
+        <!-- Desktop nav -->
+        <nav aria-label="Navigazione principale" class="hidden min-[861px]:block">
+          <ul
+            class="m-0 flex list-none flex-wrap items-center justify-start gap-[clamp(14px,2.2vw,28px)] p-0 min-[861px]:justify-center"
+          >
+            <li>
+              <a
+                href="index.html"
+                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="projects.html"
+                aria-current="page"
+                class="nav-link font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink"
+              >
+                Projects
+              </a>
+            </li>
+            <li>
+              <a
+                href="about.html"
+                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >
+                About
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Desktop contact link -->
+        <div class="hidden min-[861px]:block min-[861px]:justify-self-end">
+          <a
+            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+            href="contactMe.html"
+          >
+            Contact me
+          </a>
+        </div>
+      </header>
+
+      <!-- Mobile offcanvas -->
+      <div
+        id="mobileMenu"
+        class="mobile-menu min-[861px]:hidden"
+        aria-hidden="true"
+      >
+        <div class="mobile-menu__panel">
+          <!-- Mobile menu top -->
+          <div class="mobile-menu__top">
+            <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
+              Exhibition / Spatial Design
+            </span>
+
+            <button
+              id="mobileMenuCloseButton"
+              type="button"
+              class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]"
+              aria-label="Chiudi il menu"
+            >
+              Menu
+            </button>
+          </div>
+
+          <!-- Mobile menu nav -->
+          <nav class="mobile-menu__nav" aria-label="Navigazione mobile">
+            <a href="index.html" class="mobile-menu__link">Home</a>
+            <a href="projects.html" aria-current="page" class="mobile-menu__link mobile-menu__link--current">Projects</a>
+            <a href="about.html" class="mobile-menu__link">About</a>
+            <a href="contactMe.html" class="mobile-menu__link mobile-menu__link--underlined">Contact me</a>
+          </nav>
+
+          <!-- Mobile wordmark -->
+          <div class="mobile-menu__wordmark" aria-hidden="true">
+            <h1 class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.4rem,16vw,13rem)] leading-[0.82]">
+              <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
+              <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <main id="content" class="flex flex-1 flex-col">
+        <!-- Lista progetti -->
+        <section
+          class="px-[clamp(16px,4vw,48px)] pb-[clamp(48px,8vw,90px)] pt-[clamp(18px,2.4vw,28px)] min-[980px]:pt-[clamp(12px,1.6vw,18px)]"
+          aria-labelledby="projects-list-title"
+        >
+          <div class="mx-auto max-w-[1480px] border-b border-hairline">
+            <!-- Progetto 01 -->
+            <article aria-labelledby="project-amare-title" class="py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Immagine -->
+                <div class="min-[1100px]:col-span-7">
+                  <a
+                    href="amare.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Amare"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/amare1.jpg"
+                        alt="Preview del progetto Amare"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        fetchpriority="high"
+                      />
+                    </div>
+                  </a>
+                </div>
+
+                <!-- Testo -->
+                <div class="min-[1100px]:col-span-3 min-[1100px]:col-start-8">
+                  <div class="max-w-[31ch]">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">01/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-amare-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      A'MARE
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [EXHIBITION DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Design en plein air: between light, water and reflections!
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="amare.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 02 -->
+            <article aria-labelledby="project-beat-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Testo -->
+                <div class="order-2 min-[1100px]:order-1 min-[1100px]:col-span-3 min-[1100px]:col-start-3">
+                  <div class="max-w-[31ch] min-[1100px]:ml-auto min-[1100px]:text-right">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">02/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-beat-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      B.EAT CLUB BARILLA
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [RETAIL DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Barilla narrative store presented at the Interdependence exhibition during Design Week 2026
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="beat.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Immagine -->
+                <div class="order-1 min-[1100px]:order-2 min-[1100px]:col-span-7 min-[1100px]:col-start-6 min-[1100px]:justify-self-end">
+                  <a
+                    href="beat.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Beat"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/beat1.jpg"
+                        alt="Preview del progetto Beat"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 03 -->
+            <article aria-labelledby="project-coboxing-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Immagine -->
+                <div class="min-[1100px]:col-span-7">
+                  <a
+                    href="coboxing.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Coboxing"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/coboxing1.jpg"
+                        alt="Preview del progetto Coboxing"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+
+                <!-- Testo -->
+                <div class="min-[1100px]:col-span-3 min-[1100px]:col-start-8">
+                  <div class="max-w-[31ch]">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">03/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-coboxing-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      COBOXING
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [RETAIL DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Vitali Architecture Award: hybrid retail space for the urban regeneration plan of Bergamo Porta Sud.
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="coboxing.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 04 -->
+            <article aria-labelledby="project-flow-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Testo -->
+                <div class="order-2 min-[1100px]:order-1 min-[1100px]:col-span-3 min-[1100px]:col-start-3">
+                  <div class="max-w-[31ch] min-[1100px]:ml-auto min-[1100px]:text-right">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">04/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-flow-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      FLOW
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [PRODUCT DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Between artificial intelligence, accessibility and aesthetics: Flow, a kitchen for everyone!
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="flow.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Immagine -->
+                <div class="order-1 min-[1100px]:order-2 min-[1100px]:col-span-7 min-[1100px]:col-start-6 min-[1100px]:justify-self-end">
+                  <a
+                    href="flow.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Flow"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/flow1.jpg"
+                        alt="Preview del progetto Flow"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 05 -->
+            <article aria-labelledby="project-gineceo-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Immagine -->
+                <div class="min-[1100px]:col-span-7">
+                  <a
+                    href="gineceo.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Gineceo"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/gineceo1.jpg"
+                        alt="Preview del progetto Gineceo"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+
+                <!-- Testo -->
+                <div class="min-[1100px]:col-span-3 min-[1100px]:col-start-8">
+                  <div class="max-w-[31ch]">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">05/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-gineceo-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      GINECEO 2.0
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [SPATIAL DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Sexology clinic aimed at overcoming taboos surrounding female sexuality.
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="gineceo.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 06 -->
+            <article aria-labelledby="project-radicale-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Testo -->
+                <div class="order-2 min-[1100px]:order-1 min-[1100px]:col-span-3 min-[1100px]:col-start-3">
+                  <div class="max-w-[31ch] min-[1100px]:ml-auto min-[1100px]:text-right">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">06/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-radicale-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      RADICALE
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [PRODUCT DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      The elegance of a design that defies time.
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="radicale.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Immagine -->
+                <div class="order-1 min-[1100px]:order-2 min-[1100px]:col-span-7 min-[1100px]:col-start-6 min-[1100px]:justify-self-end">
+                  <a
+                    href="radicale.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Radicale"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/radicale1.jpg"
+                        alt="Preview del progetto Radicale"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 07 -->
+            <article aria-labelledby="project-subemersa-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Immagine -->
+                <div class="min-[1100px]:col-span-7">
+                  <a
+                    href="subemersa.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Subemersa"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/subemersa1.jpg"
+                        alt="Preview del progetto Subemersa"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+
+                <!-- Testo -->
+                <div class="min-[1100px]:col-span-3 min-[1100px]:col-start-8">
+                  <div class="max-w-[31ch]">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">07/</div>
+
+                    <!-- Titolo progetto -->
+                    <h3
+                      id="project-subemersa-title"
+                      class="mt-[8px] font-sans text-[clamp(2rem,3.3vw,3.7rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      SUBEMERSA
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [URBAN EXHIBITION DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      As I resurface, I dive back in again.
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="subemersa.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Progetto 08 -->
+            <article aria-labelledby="project-transhuman-title" class="border-t border-hairline py-[clamp(24px,4vw,38px)]">
+              <div class="grid items-center gap-[clamp(18px,2.6vw,30px)] min-[1100px]:grid-cols-12">
+                <!-- Testo -->
+                <div class="order-2 min-[1100px]:order-1 min-[1100px]:col-span-4 min-[1100px]:col-start-2">
+                  <div class="max-w-[34ch] min-[1100px]:ml-auto min-[1100px]:text-right">
+                    <!-- Meta progetto: numero nero in stile index -->
+                    <div class="font-sans text-[0.9rem] font-[650] tracking-[-0.01em] text-ink">08/</div>
+
+                    <!-- Titolo progetto: leggermente contenuto per evitare overflow -->
+                    <h3
+                      id="project-transhuman-title"
+                      class="mt-[8px] font-sans text-[clamp(1.92rem,3vw,3.4rem)] font-[650] uppercase leading-[0.92] tracking-[-0.05em]"
+                    >
+                      TRANSHUMAN
+                    </h3>
+
+                    <!-- Categoria progetto: grigia e tra parentesi, stile index -->
+                    <p class="mt-[8px] font-sans text-[0.9rem] tracking-[-0.01em] text-muted uppercase">
+                      [EXHIBITION DESIGN]
+                    </p>
+
+                    <!-- Descrizione progetto -->
+                    <p class="mt-[18px] font-sans text-[clamp(1rem,1.15vw,1.08rem)] leading-[1.5] tracking-[-0.01em] text-[rgba(11,11,11,0.74)]">
+                      Kevin Warwick, I Cyborg
+                    </p>
+
+                    <!-- Link progetto -->
+                    <a
+                      href="transhuman.html"
+                      class="mt-[20px] inline-flex font-sans text-[0.92rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+                    >
+                      View project
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Immagine -->
+                <div class="order-1 min-[1100px]:order-2 min-[1100px]:col-span-7 min-[1100px]:col-start-6 min-[1100px]:justify-self-end">
+                  <a
+                    href="transhuman.html"
+                    class="group block w-full max-w-[780px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[5px] focus-visible:outline-ink"
+                    aria-label="Apri il progetto Transhuman"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-[#f3f3f3]">
+                      <img
+                        src="assets/prjAssets/transhuman1.png"
+                        alt="Preview del progetto Transhuman"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.035] group-focus-visible:scale-[1.035] motion-reduce:transform-none motion-reduce:transition-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Footer wordmark -->
+        <footer
+          class="mt-auto px-[clamp(16px,4vw,48px)] pb-[clamp(12px,4vw,20px)] pt-[clamp(28px,8vh,84px)]"
+          aria-label="Titolo portfolio"
+        >
+          <div class="mx-auto">
+            <p class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.8rem,10vw,13rem)] leading-[0.82]">
+              <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
+              <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
+            </p>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
