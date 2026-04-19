@@ -234,7 +234,18 @@
       visibility 0ms linear 0ms;
   }
   
-  /* Mobile offcanvas internals: top bar, vertical nav e wordmark ancorato in basso */
+/* Mobile offcanvas:
+   il contenitore fisso resta full-screen, ma ora può scrollare verticalmente
+   quando l'altezza disponibile non basta, ad esempio in landscape */
+   .mobile-menu {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Mobile offcanvas panel:
+     mantiene almeno l'altezza viewport, ma può crescere oltre e farsi scrollare
+     dentro il contenitore del menu */
   .mobile-menu__panel {
     min-height: 100svh;
     display: flex;
@@ -281,6 +292,31 @@
     margin-top: auto;
     padding-top: clamp(48px, 10vh, 96px);
     color: var(--bg);
+  }
+/* Short mobile viewport:
+   in orizzontale riduco spazi e tipografia del menu offcanvas
+   così i link entrano meglio e il wordmark resta visibile senza risultare invadente */
+   @media (max-width: 860px) and (max-height: 520px) {
+    .mobile-menu__top {
+      font-size: 0.88rem;
+    }
+  
+    .mobile-menu__nav {
+      gap: 10px;
+      margin-top: clamp(24px, 6vh, 44px);
+    }
+  
+    .mobile-menu__link {
+      font-size: clamp(1.7rem, 5.6vw, 2.1rem);
+    }
+  
+    .mobile-menu__wordmark {
+      padding-top: clamp(18px, 4vh, 28px);
+    }
+  
+    .mobile-menu__wordmark h1 {
+      font-size: clamp(3.1rem, 11vw, 5.4rem);
+    }
   }
   
   /* Mobile only: blocca lo scroll della pagina quando il menu è aperto */
