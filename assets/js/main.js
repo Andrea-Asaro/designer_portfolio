@@ -473,3 +473,96 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	});
 });
+
+/* Back to top:
+   mostra il bottone dopo uno scroll abbastanza significativo
+   e riporta in cima con easing rapido ma fluido, rispettando reduced motion */
+   document.addEventListener("DOMContentLoaded", () => {
+	const backToTopButton = document.getElementById("backToTopButton");
+	if (!backToTopButton) return;
+
+	const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+	let revealOffset = 0;
+	let scrollRafId = 0;
+	let resizeRafId = 0;
+	let animationFrameId = 0;
+
+	/* Reveal threshold:
+	   200px può andare, ma su viewport grandi compare troppo presto;
+	   qui uso una soglia adattiva più elegante tra circa 220px e 360px */
+	const computeRevealOffset = () => {
+		revealOffset = Math.max(220, Math.min(window.innerHeight * 0.35, 360));
+	};
+
+	/* Visibility state:
+	   attiva o nasconde il bottone solo quando diventa davvero utile */
+	const updateVisibility = () => {
+		backToTopButton.classList.toggle("is-visible", window.scrollY > revealOffset);
+	};
+
+	/* Easing:
+	   movimento veloce ma non brusco, più coerente del solo smooth nativo */
+	const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+	const scrollToTop = () => {
+		if (animationFrameId) {
+			window.cancelAnimationFrame(animationFrameId);
+			animationFrameId = 0;
+		}
+
+		if (prefersReduced.matches) {
+			window.scrollTo(0, 0);
+			return;
+		}
+
+		const startY = window.scrollY;
+		if (startY <= 0) return;
+
+		const duration = Math.min(520, Math.max(340, startY * 0.18));
+		const startTime = performance.now();
+
+		const step = (now) => {
+			const progress = Math.min((now - startTime) / duration, 1);
+			const eased = easeOutCubic(progress);
+
+			window.scrollTo(0, Math.round(startY * (1 - eased)));
+
+			if (progress < 1) {
+				animationFrameId = window.requestAnimationFrame(step);
+				return;
+			}
+
+			animationFrameId = 0;
+		};
+
+		animationFrameId = window.requestAnimationFrame(step);
+	};
+
+	/* Scroll and resize:
+	   throttle via requestAnimationFrame per mantenere la pagina reattiva */
+	const onScroll = () => {
+		if (scrollRafId) return;
+
+		scrollRafId = window.requestAnimationFrame(() => {
+			scrollRafId = 0;
+			updateVisibility();
+		});
+	};
+
+	const onResize = () => {
+		if (resizeRafId) return;
+
+		resizeRafId = window.requestAnimationFrame(() => {
+			resizeRafId = 0;
+			computeRevealOffset();
+			updateVisibility();
+		});
+	};
+
+	backToTopButton.addEventListener("click", scrollToTop);
+	window.addEventListener("scroll", onScroll, { passive: true });
+	window.addEventListener("resize", onResize, { passive: true });
+
+	computeRevealOffset();
+	updateVisibility();
+});

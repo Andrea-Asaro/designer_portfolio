@@ -302,20 +302,126 @@
       padding-bottom: clamp(8px, 1.8vh, 16px);
     }
   }
+
+  /* Back to top:
+   controllo fisso ancorato al gutter della pagina; resta nascosto finché
+   non c'è abbastanza scroll e compare con un ingresso leggero verso l'alto */
+   .back-to-top {
+    position: fixed;
+    right: clamp(16px, 4vw, 48px);
+    bottom: max(env(safe-area-inset-bottom), clamp(28px, 4.4vw, 46px));
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(0, 14px, 0);
+    transition:
+      opacity 220ms var(--ease),
+      transform 320ms var(--ease),
+      visibility 0ms linear 320ms;
+  }
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 220ms var(--ease),
+    transform 320ms var(--ease),
+    visibility 0ms linear 0ms;
+}
+
+/* Back to top frame:
+   shell rettangolare e pulita con overflow hidden; serve a creare
+   l'effetto "sbustata" mentre la freccia sale da dentro il contenitore */
+   .back-to-top__frame {
+    width: clamp(56px, 5.2vw, 72px);
+    height: clamp(68px, 6.6vw, 88px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+    background: rgba(255, 255, 255, 0.94);
+    transition:
+      border-color 220ms var(--ease),
+      transform 220ms var(--ease);
+  }
+
+/* Back to top icon:
+   parte da sotto il frame e rientra in posizione quando il bottone diventa visibile */
+   .back-to-top__icon {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform: translate3d(0, 155%, 0);
+    transition: transform 380ms var(--ease);
+  }
+
+.back-to-top.is-visible .back-to-top__icon {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Back to top interaction:
+   micro-feedback minimo, coerente col linguaggio editoriale e con focus visibile */
+.back-to-top:hover .back-to-top__frame,
+.back-to-top:focus-visible .back-to-top__frame {
+  border-color: rgba(11, 11, 11, 0.22);
+  transform: translate3d(0, -2px, 0);
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* Back to top mobile:
+   lo tengo leggermente più raccolto sul bordo per evitare tocchi accidentali */
+   @media (max-width: 860px) {
+    .back-to-top {
+      right: clamp(14px, 4vw, 20px);
+      bottom: max(env(safe-area-inset-bottom), 22px);
+    }
   
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
+    .back-to-top__frame {
+      width: 50px;
+      height: 62px;
+    }
   
-    .skip-link,
-    .nav-link,
-    .work-meta,
-    .work-media,
-    .work-card,
-    .carousel-nav-button,
-    .mobile-menu {
-      transition: none !important;
+    .back-to-top__icon {
+      width: 22px;
+      height: 22px;
     }
   }
+  
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  .skip-link,
+  .nav-link,
+  .work-meta,
+  .work-media,
+  .work-card,
+  .carousel-nav-button,
+  .mobile-menu,
+  .back-to-top,
+  .back-to-top__frame,
+  .back-to-top__icon {
+    transition: none !important;
+  }
+}
   
 /* Mobile carousel:
    keeps a viewport-based stage and derives equal card size from the available height */
