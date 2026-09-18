@@ -1,3 +1,196 @@
+/* Homepage intro:
+   brand letter-reveal → split → FLIP settle into page layout */
+document.addEventListener("DOMContentLoaded", () => {
+	const intro = document.getElementById("siteIntro");
+	if (!intro) {
+		document.documentElement.classList.remove("has-intro");
+		return;
+	}
+
+	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+	const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+	const cleanupIntro = () => {
+		intro.setAttribute("hidden", "");
+		intro.setAttribute("aria-hidden", "true");
+		intro.remove();
+		document.documentElement.classList.remove(
+			"has-intro",
+			"is-intro-settling",
+			"is-page-in",
+			"is-intro-media-in"
+		);
+	};
+
+	const finishWithoutMotion = () => {
+		cleanupIntro();
+	};
+
+	const buildLetters = () => {
+		intro.querySelectorAll("[data-intro-word]").forEach((word) => {
+			const text = word.getAttribute("data-intro-word") || "";
+			word.replaceChildren(
+				...Array.from(text).map((char) => {
+					const span = document.createElement("span");
+					span.className = "site-intro__letter";
+					span.textContent = char;
+					return span;
+				})
+			);
+		});
+	};
+
+	const rectOf = (el) => {
+		const rect = el.getBoundingClientRect();
+		return {
+			left: rect.left,
+			top: rect.top,
+			width: Math.max(rect.width, 1),
+			height: Math.max(rect.height, 1),
+		};
+	};
+
+	/*
+	  FLIP sui target reali (footer):
+	  a fine animazione non c'è swap proxy→DOM → niente scatto sul testo.
+	  uniform=true: scale uguale su X/Y.
+	*/
+	const flipTargetFrom = (el, first, last, duration, { uniform = false } = {}) => {
+		const scaleX = first.width / last.width;
+		const scaleY = uniform ? scaleX : first.height / last.height;
+		const dx = first.left - last.left;
+		const dy = first.top - last.top;
+
+		el.style.transformOrigin = "top left";
+		el.style.willChange = "transform";
+		el.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+
+		return el
+			.animate(
+				[
+					{ transform: `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})` },
+					{ transform: "translate(0px, 0px) scale(1, 1)" },
+				],
+				{
+					duration,
+					easing: EASE,
+					fill: "forwards",
+				}
+			)
+			.finished.then(() => {
+				el.style.transform = "";
+				el.style.willChange = "";
+			});
+	};
+
+	/* Proxy fixed in screen-space (per il media, che ha già transform CSS sul carosello) */
+	const flipProxyTo = (el, first, last, duration) => {
+		const sx = last.width / first.width;
+		const sy = last.height / first.height;
+		const dx = last.left - first.left;
+		const dy = last.top - first.top;
+
+		el.classList.add("is-flipping");
+		el.style.position = "fixed";
+		el.style.left = `${first.left}px`;
+		el.style.top = `${first.top}px`;
+		el.style.width = `${first.width}px`;
+		el.style.height = `${first.height}px`;
+		el.style.margin = "0";
+		el.style.right = "auto";
+		el.style.bottom = "auto";
+		el.style.zIndex = "90";
+		el.style.transformOrigin = "top left";
+		el.style.clipPath = "none";
+		el.style.visibility = "visible";
+		el.style.opacity = "1";
+		el.style.transform = "translate(0px, 0px) scale(1, 1)";
+
+		return el.animate(
+			[
+				{ transform: "translate(0px, 0px) scale(1, 1)" },
+				{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+			],
+			{
+				duration,
+				easing: EASE,
+				fill: "forwards",
+			}
+		).finished;
+	};
+
+	const settleToPage = async () => {
+		const introSans = intro.querySelector(".site-intro__word--sans");
+		const introSerif = intro.querySelector(".site-intro__word--serif");
+		const introMedia = intro.querySelector("[data-intro-media]");
+		const targetSans = document.querySelector(".site-wordmark__sans");
+		const targetSerif = document.querySelector(".site-wordmark__serif");
+		const targetMedia =
+			document.querySelector('.work-card[data-initial="true"] .work-media') ||
+			document.querySelector(".work-card .work-media");
+
+		if (!introSans || !introSerif || !introMedia || !targetSans || !targetSerif || !targetMedia) {
+			document.documentElement.classList.remove("has-intro");
+			intro.classList.add("is-exiting");
+			await wait(500);
+			cleanupIntro();
+			return;
+		}
+
+		const firstSans = rectOf(introSans);
+		const firstSerif = rectOf(introSerif);
+		const firstMedia = rectOf(introMedia);
+
+		intro.classList.add("is-settling");
+		document.documentElement.classList.add("is-intro-settling");
+		document.documentElement.classList.remove("has-intro");
+
+		void document.body.offsetHeight;
+
+		const lastSans = rectOf(targetSans);
+		const lastSerif = rectOf(targetSerif);
+		const lastMedia = rectOf(targetMedia);
+
+		const flips = Promise.all([
+			flipTargetFrom(targetSans, firstSans, lastSans, 1450, { uniform: true }),
+			flipTargetFrom(targetSerif, firstSerif, lastSerif, 1450, { uniform: true }),
+			flipProxyTo(introMedia, firstMedia, lastMedia, 1450),
+		]);
+
+		await wait(180);
+		document.documentElement.classList.add("is-page-in");
+
+		await flips;
+
+		/* Media: accendi il target reale e spegni il proxy nello stesso frame */
+		document.documentElement.classList.add("is-intro-media-in");
+		introMedia.style.opacity = "0";
+		await wait(40);
+		cleanupIntro();
+	};
+
+	if (prefersReduced.matches) {
+		finishWithoutMotion();
+		return;
+	}
+
+	buildLetters();
+	intro.removeAttribute("hidden");
+	intro.setAttribute("aria-hidden", "false");
+
+	const run = async () => {
+		await wait(40);
+		intro.classList.add("is-letters-in");
+		await wait(1180);
+		intro.classList.add("is-split", "is-media-in");
+		await wait(1100);
+		await settleToPage();
+	};
+
+	run();
+});
+
 /* Carousel:
    - desktop: loop infinito + card attiva centrata + scaling visivo guidato dallo scroll
    - mobile: snap nativo + massimo una tile per swipe + riallineamento istantaneo nel set centrale
