@@ -34,6 +34,14 @@
       };
     </script>
     <link rel="stylesheet" href="assets/css/main.css" />
+    <script>
+      /* Evita flash del contenuto prima dell'intro */
+      try {
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("has-intro");
+        }
+      } catch (_) {}
+    </script>
     <script defer src="assets/js/main.js"></script>
   </head>
   <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
@@ -44,8 +52,39 @@
       >
     Vai al contenuto
     </a>
+
+    <!-- Intro overlay: brand reveal → split → progetto → pagina -->
+    <div
+      id="siteIntro"
+      class="site-intro"
+      aria-hidden="true"
+      hidden
+    >
+      <div class="site-intro__stage">
+        <div class="site-intro__name" aria-label="Daddario Rosanna">
+          <div
+            class="site-intro__word site-intro__word--sans"
+            data-intro-word="DADDARIO"
+          ></div>
+          <div
+            class="site-intro__word site-intro__word--serif"
+            data-intro-word="rosanna"
+          ></div>
+        </div>
+        <div class="site-intro__media" data-intro-media aria-hidden="true">
+          <img
+            src="assets/img/1_a_mare.jpg"
+            alt=""
+            width="700"
+            height="980"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Page shell -->
-    <div class="flex min-h-[100svh] flex-col">
+    <div class="site-shell flex min-h-[100svh] flex-col">
       <!-- Header -->
       <header
         class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(12px,4vw,32px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
@@ -361,9 +400,9 @@
      class="mt-auto px-[clamp(16px,4vw,48px)] pb-[clamp(12px,4vw,20px)] pt-[clamp(30px,8vh,70px)]"
      aria-label="Titolo portfolio"
    >
-     <h1 class="m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.8rem,10vw,13rem)] leading-[0.82]">
-       <span class="font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
-       <span class="font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
+     <h1 class="site-wordmark m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.8rem,10vw,13rem)] leading-[0.82]">
+       <span class="site-wordmark__sans font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
+       <span class="site-wordmark__serif font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
      </h1>
    </footer>
       </main>
