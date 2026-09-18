@@ -53,14 +53,15 @@
 }
 
 
-/* Carousel shell:
-   mantengo identica l'altezza dello stage, ma riduco leggermente il poster
-   così ogni tile respira di più dentro il suo spazio ed eviti overflow verticali */
+/* Carousel shell (Ross Mason):
+   - gap 0, inactive tutte uguali e top-allineate
+   - attiva: scale(2) con origin-top (cresce in basso / ai lati, top fisso)
+   - niente scale progressivo sulle vicine (è quello che disallineava) */
    .work-scroller {
     --carousel-h: clamp(360px, 69svh, 640px);
     --meta-h: clamp(86px, 7.5vh, 96px);
-    --card-gap: clamp(14px, 1.6vw, 22px);
-    --active-scale: 1.02;
+    --card-gap: 0;
+    --active-scale: 2;
     --poster-h-base: calc((var(--carousel-h) - var(--meta-h)) / var(--active-scale));
     --poster-h: calc(var(--poster-h-base) * var(--tile-scale));
     --poster-w: calc(var(--poster-h) * 0.7143);
@@ -78,22 +79,16 @@
   }
 
   /* Desktop stage:
-   quando riduci --tile-scale, anche l'altezza del carosello si restringe
-   seguendo la tile reale, lasciando sotto solo un margine minimo di sicurezza */
+   altezza = meta + poster×2 così l'attiva ha spazio per crescere;
+   il wordmark sta sotto (z più basso) e viene coperto, senza scroll pagina */
 @media (min-width: 861px) {
   .work-scroller {
-    --desktop-media-scale: 1.035;
-    --desktop-bottom-gap: clamp(0px, 0.35vh, 4px);
+    --tile-scale: 1;
+    --desktop-bottom-gap: 0px;
 
-    height: calc(
-      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
-    );
-    min-height: calc(
-      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
-    );
-    max-height: calc(
-      var(--meta-h) + (var(--poster-h) * var(--desktop-media-scale)) + var(--desktop-bottom-gap)
-    );
+    height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)) + var(--desktop-bottom-gap));
+    min-height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)) + var(--desktop-bottom-gap));
+    max-height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)) + var(--desktop-bottom-gap));
   }
 }
   
@@ -144,11 +139,14 @@
   }
   
 /* Meta block:
-   reserves a fixed vertical slot so the full card never exceeds the stage height */
+   stessa larghezza della media (padding-inline 0) → allineata al bordo sx immagine */
    .work-meta {
     flex: 0 0 var(--meta-h);
     min-height: var(--meta-h);
+    width: 100%;
+    padding-inline: 0;
     padding-bottom: 14px;
+    text-align: left;
     transform: translateY(0);
     transition: transform 220ms var(--ease);
     will-change: transform;
@@ -173,20 +171,26 @@
     flex: 0 0 var(--poster-w);
     display: flex;
     align-self: flex-start;
+    position: relative;
+    z-index: 1;
     --card-progress: 0;
   }
   
 /* Media box:
-   its height is derived from the stage, so image + meta always stay fully visible */
+   inactive = footprint base; attiva cresce in layout (niente scale transform,
+   così il FLIP intro non scatta al handoff) */
    .work-media {
     width: 100%;
     height: var(--poster-h);
     aspect-ratio: var(--poster-ratio);
     min-height: 0;
     overflow: hidden;
-    will-change: transform;
-    transform-origin: center center;
-    transform: scale(calc(0.82 + (0.215 * var(--card-progress))));
+    transform: none;
+    transform-origin: top center;
+    transition:
+      width 420ms var(--ease),
+      height 420ms var(--ease),
+      margin 420ms var(--ease);
     clip-path: inset(0 round 0);
     background: #f3f3f3;
   }
@@ -200,14 +204,18 @@
   }
   
 /* Active state:
-   remains visual only and no longer changes layout dimensions */
+   footprint card invariato; la media si espande e sovrappone i vicini */
    .work-card.is-active {
     width: var(--poster-w);
     flex-basis: var(--poster-w);
+    z-index: 2;
   }
   
   .work-card.is-active .work-media {
-    transform: scale(1.035);
+    width: calc(100% * var(--active-scale));
+    height: calc(var(--poster-h) * var(--active-scale));
+    margin-left: calc((1 - var(--active-scale)) * 50%);
+    transform: none;
   }
   
   /* Mobile offcanvas menu: pannello full-screen con palette invertita */
@@ -326,6 +334,107 @@
     }
   }
 
+  /* Portfolio wordmark:
+   scala "DADDARIO rosanna" alla larghezza dello schermo e la centra */
+  footer[aria-label="Titolo portfolio"] {
+    padding-inline: clamp(10px, 1.6vw, 20px);
+  }
+
+  footer[aria-label="Titolo portfolio"] h1,
+  footer[aria-label="Titolo portfolio"] p,
+  footer[aria-label="Titolo portfolio"] .site-wordmark {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.09em;
+    width: 100%;
+    margin: 0;
+    /* ~larghezza ottica DADDARIO(0.8em) + gap + rosanna(1.17em) ≈ 7.6–8em */
+    font-size: clamp(2.6rem, 12.4vw, 20rem);
+    line-height: 0.82;
+  }
+
+  /* Homepage (Ross Mason):
+   viewport bloccata — niente scroll verticale;
+   wordmark in basso dietro le tile; l'attiva (scale 2) la copre */
+  html.is-home,
+  html.is-home body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  html.is-home .site-shell {
+    height: 100svh;
+    max-height: 100svh;
+    overflow: hidden;
+  }
+
+  html.is-home #content {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  html.is-home main > section[aria-label="Progetti selezionati"] {
+    position: relative;
+    z-index: 1;
+    /* Abbassa lo stage: l'attiva (scale 2 origin-top) entra di più sul wordmark */
+    margin-top: clamp(48px, 10vh, 120px);
+    background: transparent;
+  }
+
+  html.is-home .work-scroller {
+    background: transparent;
+  }
+
+  html.is-home footer[aria-label="Titolo portfolio"],
+  html.is-home .site-wordmark-footer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin: 0;
+    padding-inline: clamp(8px, 1.2vw, 16px);
+    /* Nome più basso: l'attiva lo copre comunque crescendo verso il basso */
+    padding-bottom: clamp(12px, 2.5vh, 36px);
+    padding-top: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  @media (min-width: 861px) {
+    html.is-home .work-scroller {
+      /* Inactive ~1/3 viewport; attiva 2× arriva sul nome in basso */
+      --meta-h: clamp(72px, 8vh, 90px);
+      --poster-h: clamp(190px, 34svh, 310px);
+      --poster-w: calc(var(--poster-h) * 0.7143);
+      --active-scale: 2;
+
+      height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)));
+      min-height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)));
+      max-height: calc(var(--meta-h) + (var(--poster-h) * var(--active-scale)));
+      cursor: grab;
+      touch-action: pan-x;
+    }
+
+    html.is-home .work-scroller.is-dragging {
+      cursor: grabbing;
+    }
+
+    /* Wordmark a tutta larghezza senza clip: D e a finale restano in viewport */
+    html.is-home footer[aria-label="Titolo portfolio"] .site-wordmark,
+    html.is-home .site-wordmark-footer .site-wordmark {
+      width: 100%;
+      max-width: 100%;
+      /* larghezza ottica reale ≈ 7.75× font-size dell'h1 */
+      font-size: calc((100vw - 32px) / 7.75);
+      overflow: visible;
+    }
+  }
+
   /* Short desktop viewports:
    slightly compresses vertical spacing so carousel and wordmark stay better balanced */
 @media (min-width: 861px) and (max-height: 860px) {
@@ -336,6 +445,16 @@
     footer[aria-label="Titolo portfolio"] {
       padding-top: clamp(8px, 1.8vh, 18px);
       padding-bottom: clamp(8px, 1.8vh, 16px);
+    }
+
+    html.is-home main > section[aria-label="Progetti selezionati"] {
+      margin-top: clamp(28px, 6vh, 72px);
+    }
+
+    html.is-home footer[aria-label="Titolo portfolio"],
+    html.is-home .site-wordmark-footer {
+      padding-top: 0;
+      padding-bottom: clamp(8px, 1.5vh, 24px);
     }
   }
 
@@ -468,7 +587,7 @@
    .work-scroller {
     --carousel-h: clamp(390px, 60svh, 520px);
     --meta-h: clamp(82px, 18vw, 98px);
-    --card-gap: 2px;
+    --card-gap: 0;
     --active-scale: 1;
     --poster-h-base: calc(var(--carousel-h) - var(--meta-h));
     --poster-h: calc(var(--poster-h-base) * var(--tile-scale));
@@ -499,7 +618,9 @@
        disables active enlargement and keeps all tiles equal */
     .work-media,
     .work-card.is-active .work-media {
+      width: 100%;
       height: var(--poster-h);
+      margin-left: 0;
       transform: none;
     }
   
@@ -539,11 +660,14 @@ html.is-intro-settling .site-wordmark {
 }
 
 html.is-intro-settling .work-card[data-initial="true"] .work-media {
-  opacity: 0;
+  /* Attore FLIP: visibile per tutta la settle, senza transition di size */
+  opacity: 1 !important;
+  transition: none !important;
 }
 
-html.is-intro-settling.is-intro-media-in .work-card[data-initial="true"] .work-media {
-  opacity: 1;
+html.has-intro .work-media,
+html.is-intro-settling .work-media {
+  transition: none !important;
 }
 
 .site-intro.is-settling .site-intro__word {
