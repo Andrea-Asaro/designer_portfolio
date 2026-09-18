@@ -51,6 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
 		};
 	};
 
+	/* Destinazione media = rettangolo reale a riposo (layout 2×, senza scale CSS). */
+	const prepareActiveMedia = (mediaEl) => {
+		const card = mediaEl.closest(".work-card");
+		if (card) {
+			document.querySelectorAll(".work-card.is-active").forEach((node) => {
+				if (node !== card) node.classList.remove("is-active");
+			});
+			card.classList.add("is-active");
+		}
+
+		mediaEl.style.transition = "none";
+		mediaEl.style.transform = "none";
+		mediaEl.style.opacity = "1";
+		void mediaEl.offsetHeight;
+	};
+
 	/*
 	  FLIP sui target reali (footer):
 	  a fine animazione non c'è swap proxy→DOM → niente scatto sul testo.
@@ -146,6 +162,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.documentElement.classList.add("is-intro-settling");
 		document.documentElement.classList.remove("has-intro");
 
+		/* Il media reale è l'attore FLIP (come il wordmark): niente swap proxy→DOM. */
+		prepareActiveMedia(targetMedia);
+		introMedia.style.opacity = "0";
+		introMedia.style.visibility = "hidden";
+
 		void document.body.offsetHeight;
 
 		const lastSans = rectOf(targetSans);
@@ -155,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		const flips = Promise.all([
 			flipTargetFrom(targetSans, firstSans, lastSans, 1450, { uniform: true }),
 			flipTargetFrom(targetSerif, firstSerif, lastSerif, 1450, { uniform: true }),
-			flipProxyTo(introMedia, firstMedia, lastMedia, 1450),
+			flipTargetFrom(targetMedia, firstMedia, lastMedia, 1450),
 		]);
 
 		await wait(180);
@@ -163,11 +184,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		await flips;
 
-		/* Media: accendi il target reale e spegni il proxy nello stesso frame */
-		document.documentElement.classList.add("is-intro-media-in");
-		introMedia.style.opacity = "0";
-		await wait(40);
+		targetMedia.style.transition = "none";
+		targetMedia.style.transform = "";
+		targetMedia.style.opacity = "";
+		void targetMedia.offsetHeight;
+
 		cleanupIntro();
+
+		window.requestAnimationFrame(() => {
+			targetMedia.style.transition = "";
+		});
 	};
 
 	if (prefersReduced.matches) {
@@ -199,9 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	/* Riferimenti principali del carosello e controlli desktop */
 	const scroller = document.getElementById("workScroller");
 	if (!scroller) return;
-
-	const prevButton = document.getElementById("workPrevButton");
-	const nextButton = document.getElementById("workNextButton");
 
 	/* Media query per motion reduction e breakpoint mobile */
 	const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -539,14 +562,73 @@ document.addEventListener("DOMContentLoaded", () => {
 		event.preventDefault();
 	});
 
-	/* Pulsanti desktop */
-	prevButton?.addEventListener("click", () => {
-		stepCarousel(-1);
+	/* Desktop: trackpad/wheel + drag del mouse (niente frecce) */
+	scroller.addEventListener(
+		"wheel",
+		(event) => {
+			if (isMobile()) return;
+
+			const absX = Math.abs(event.deltaX);
+			const absY = Math.abs(event.deltaY);
+			const delta = absX > absY ? event.deltaX : event.deltaY;
+			if (!delta) return;
+
+			event.preventDefault();
+			scroller.scrollLeft += delta;
+		},
+		{ passive: false }
+	);
+
+	let pointerDrag = null;
+
+	scroller.addEventListener("pointerdown", (event) => {
+		if (isMobile()) return;
+		if (event.pointerType === "touch") return;
+		if (event.button !== 0) return;
+
+		pointerDrag = {
+			pointerId: event.pointerId,
+			startX: event.clientX,
+			startScroll: scroller.scrollLeft,
+			moved: false,
+		};
+		scroller.classList.add("is-dragging");
+		scroller.setPointerCapture?.(event.pointerId);
 	});
 
-	nextButton?.addEventListener("click", () => {
-		stepCarousel(1);
+	scroller.addEventListener("pointermove", (event) => {
+		if (!pointerDrag || event.pointerId !== pointerDrag.pointerId) return;
+
+		const dx = event.clientX - pointerDrag.startX;
+		if (!pointerDrag.moved && Math.abs(dx) > 3) {
+			pointerDrag.moved = true;
+		}
+		if (!pointerDrag.moved) return;
+
+		event.preventDefault();
+		scroller.scrollLeft = pointerDrag.startScroll - dx;
 	});
+
+	const endPointerDrag = (event) => {
+		if (!pointerDrag || event.pointerId !== pointerDrag.pointerId) return;
+
+		const didDrag = pointerDrag.moved;
+		pointerDrag = null;
+		scroller.classList.remove("is-dragging");
+
+		if (didDrag) {
+			/* Evita il click sul progetto dopo un drag */
+			const blockClick = (clickEvent) => {
+				clickEvent.preventDefault();
+				clickEvent.stopPropagation();
+				scroller.removeEventListener("click", blockClick, true);
+			};
+			scroller.addEventListener("click", blockClick, true);
+		}
+	};
+
+	scroller.addEventListener("pointerup", endPointerDrag);
+	scroller.addEventListener("pointercancel", endPointerDrag);
 
 	/* Inizializzazione:
 	   - centra la card iniziale nel set centrale

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it" class="h-full">
+<html lang="it" class="h-full is-home">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -44,7 +44,7 @@
     </script>
     <script defer src="assets/js/main.js"></script>
   </head>
-  <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
+  <body class="bg-white font-serif text-ink antialiased">
     <!-- Skip link -->
     <a
       class="skip-link absolute left-[clamp(16px,4vw,48px)] top-[10px] z-10 border border-hairline bg-white px-3 py-2 -translate-y-[160%] transition-transform duration-200 ease-editorial focus:translate-y-0"
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Page shell -->
-    <div class="site-shell flex min-h-[100svh] flex-col">
+    <div class="site-shell flex h-[100svh] max-h-[100svh] flex-col overflow-hidden">
       <!-- Header -->
       <header
         class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(12px,4vw,32px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
@@ -189,9 +189,9 @@
         </div>
       </div>
       <!-- Main content -->
-      <main id="content" class="flex flex-1 flex-col">
+      <main id="content" class="relative flex min-h-0 flex-1 flex-col">
         <!-- Horizontal work carousel -->
-        <section class="mt-[clamp(30px,7vh,55px)]" aria-label="Progetti selezionati">
+        <section class="home-work" aria-label="Progetti selezionati">
           <div
             class="work-scroller flex touch-auto items-start overflow-x-auto overflow-y-visible px-[clamp(16px,4vw,48px)] pb-0 [overscroll-behavior-x:contain] [scroll-padding-inline:50%] [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch]"
             id="workScroller"
@@ -368,39 +368,14 @@
               </a>
             </article>
           </div>
-          <div class="hidden min-[861px]:flex items-center justify-center gap-3 px-[clamp(16px,4vw,48px)] pt-[clamp(2px,0.6vh,8px)]" aria-label="Controlli carosello">
-            <button
-              id="workPrevButton"
-              type="button"
-              class="carousel-nav-button"
-              aria-controls="workScroller"
-              aria-label="Progetto precedente"
-              >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M14.5 6.5L9 12l5.5 5.5" />
-              </svg>
-            </button>
-            <button
-              id="workNextButton"
-              type="button"
-              class="carousel-nav-button"
-              aria-controls="workScroller"
-              aria-label="Progetto successivo"
-              >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9.5 6.5L15 12l-5.5 5.5" />
-              </svg>
-            </button>
-          </div>
         </section>
         <!-- Footer wordmark -->
-<!-- Homepage footer:
-     stessa struttura, cambio solo la formula responsive del titolo -->
+<!-- Homepage footer: dietro le tile, ancorato in basso (vedi main.css .is-home) -->
      <footer
-     class="mt-auto px-[clamp(16px,4vw,48px)] pb-[clamp(12px,4vw,20px)] pt-[clamp(30px,8vh,70px)]"
+     class="site-wordmark-footer"
      aria-label="Titolo portfolio"
    >
-     <h1 class="site-wordmark m-0 flex flex-wrap items-baseline gap-[0.09em] text-[clamp(4.8rem,10vw,13rem)] leading-[0.82]">
+     <h1 class="site-wordmark m-0 flex flex-nowrap items-baseline justify-center gap-[0.09em] leading-[0.82]">
        <span class="site-wordmark__sans font-sans text-[0.8em] font-semibold tracking-[-0.05em]">DADDARIO</span>
        <span class="site-wordmark__serif font-serif text-[1.17em] font-normal italic tracking-[-0.02em]">rosanna</span>
      </h1>
