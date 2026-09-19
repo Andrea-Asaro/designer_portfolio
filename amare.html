@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap"
       rel="stylesheet"
     />
 
@@ -53,15 +53,15 @@
 
     <!-- Page shell -->
     <div class="flex min-h-[100svh] flex-col">
-      <!-- Header -->
-      <header
-        class="grid grid-cols-1 items-start gap-[18px] px-[clamp(16px,4vw,48px)] pt-[clamp(12px,4vw,32px)] min-[861px]:grid-cols-[1fr_auto_1fr]"
-      >
+      <!-- Project hero (first viewport) -->
+      <section class="project-hero" aria-label="Apertura progetto">
+        <header class="project-hero__header">
         <!-- Header top row -->
         <div class="flex items-start justify-between gap-4 min-[861px]:block">
-          <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
-            Exhibition / Spatial Design
-          </span>
+          <a href="index.html" class="project-logo" aria-label="Daddario Rosanna — Home">
+            <span class="project-logo__sans">DADDARIO</span>
+            <span class="project-logo__serif">rosanna</span>
+          </a>
 
           <button
             id="mobileMenuButton"
@@ -118,6 +118,18 @@
         </div>
       </header>
 
+
+        <div class="project-hero__center">
+          <h1 class="project-hero__title">A’MARE</h1>
+          <p class="project-hero__year">(2022)</p>
+        </div>
+
+        <div class="project-hero__meta">
+          <p class="project-hero__meta-item">[ARCHITECTURE THEORY LAB]</p>
+          <p class="project-hero__meta-item project-hero__meta-item--end">[BACHELOR’S DEGREE, POLITECNICO DI BARI]</p>
+        </div>
+      </section>
+
       <!-- Mobile offcanvas -->
       <div
         id="mobileMenu"
@@ -127,9 +139,10 @@
         <div class="mobile-menu__panel">
           <!-- Mobile menu top -->
           <div class="mobile-menu__top">
-            <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
-              Exhibition / Spatial Design
-            </span>
+            <a href="index.html" class="project-logo" aria-label="Daddario Rosanna — Home">
+            <span class="project-logo__sans">DADDARIO</span>
+            <span class="project-logo__serif">rosanna</span>
+          </a>
 
             <button
               id="mobileMenuCloseButton"
@@ -162,16 +175,8 @@
       <!-- Main content -->
       <main id="content" class="flex flex-1 flex-col">
         <!-- Project article -->
-        <article class="px-[clamp(16px,4vw,48px)] pt-[clamp(26px,6vw,56px)]">
-          <!-- Project heading:
-               più respiro sopra e sotto per far emergere meglio il titolo sul bianco -->
-               <header class="mx-auto w-full max-w-[1560px] py-[clamp(56px,11vw,148px)]">
-                <h1 class="m-0 max-w-[10ch] font-sans text-[clamp(3.1rem,9vw,8.8rem)] font-[650] uppercase leading-[0.88] tracking-[-0.06em]">
-                  A’MARE
-                </h1>
-              </header>
-
-          <!-- Cover image:
+        <article class="px-[clamp(16px,4vw,48px)] pt-0">
+<!-- Cover image:
                la cover resta ampia ma non si allarga all'infinito su schermi grandi -->
                <section class="mt-0">
                 <figure class="mx-auto m-0 max-w-[1560px]">
@@ -183,32 +188,28 @@
                   />
                 </figure>
               </section>
-
           <!-- Intro editorial block -->
-          <section class="mx-auto mt-[clamp(72px,12vw,160px)] max-w-[72ch]">
-            <h2 class="max-w-[20ch] font-sans text-[clamp(1.9rem,4vw,3.3rem)] font-[650] leading-[0.98] tracking-[-0.04em]">
-              Design en plein air: between light, water and reflections!
-            </h2>
-
-            <div class="mt-[clamp(24px,4vw,36px)] space-y-[clamp(18px,2.4vw,24px)] font-sans text-[clamp(1.04rem,1.35vw,1.24rem)] leading-[1.68] tracking-[-0.01em] text-ink">
-              <p>
-                The exhibition investigates the relationship between natural phenomena, human perception, and the built environment through Jacopo Foggini’s A’mare collection, presented during Fuorisalone 2021 at the Edra showroom. The furniture pieces, handcrafted from polycarbonate strips, exploit the material’s optical properties—transparency, refraction, and light diffusion—to emulate the visual behavior of water.
-              </p>
-
-              <p>
-                The installation integrates human movement, architecture, and natural elements through a reflective pool and a transparent walkway, creating continuity between body, object, and space. The glass architecture of the Canadian Pavilion enables dynamic light variation, directly influencing chromatic perception.
-              </p>
-
-              <p>
-                The project draws on light absorption and scattering principles, where shorter wavelengths penetrate deeper, defining water’s characteristic coloration and reinforcing the synthesis between human, nature, and architecture.
-              </p>
-            </div>
-
-            <!-- Project meta -->
-            <div class="mt-[clamp(28px,4vw,36px)] border-t border-hairline pt-[16px]">
-              <p class="m-0 font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em] text-muted">
-                [ 2022, Architecture Theory Lab, Bachelor’s Degree in Industrial Design, Politecnico di Bari ]
-              </p>
+          <section class="project-intro" aria-label="Informazioni progetto">
+            <div class="project-intro__grid">
+              <p class="project-intro__index" aria-hidden="true">1/</p>
+              <div class="project-intro__main">
+                <h2 class="project-intro__title">
+                  DESIGN <span class="project-intro__alt">en plein air</span><br />
+                  BETWEEN LIGHT, WATER<br />
+                  AND REFLECTIONS!
+                </h2>
+                <div class="project-intro__info">
+                  <p class="project-intro__label">[PROJECT INFO]</p>
+                  <div class="project-intro__body">
+                    <p>
+                      The exhibition investigates the relationship between natural phenomena, human perception, and the built environment through Jacopo Foggini’s A’mare collection, presented during Fuorisalone 2021 at the Edra showroom. The furniture pieces, handcrafted from polycarbonate strips, exploit the material’s optical properties—transparency, refraction, and light diffusion—to emulate the visual behavior of water.
+                    </p>
+                    <p>
+                      The installation integrates human movement, architecture, and natural elements through a reflective pool and a transparent walkway, creating continuity between body, object, and space. The glass architecture of the Canadian Pavilion enables dynamic light variation, directly influencing chromatic perception.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -304,20 +305,5 @@
         </footer>
       </main>
     </div>
-
-    <!-- Back to top -->
-    <button
-      id="backToTopButton"
-      type="button"
-      class="back-to-top"
-      aria-label="Torna in cima alla pagina"
-    >
-      <span class="back-to-top__frame" aria-hidden="true">
-        <svg class="back-to-top__icon" viewBox="0 0 24 24" focusable="false">
-          <path d="M12 19V5"></path>
-          <path d="M5.5 11.5 12 5l6.5 6.5"></path>
-        </svg>
-      </span>
-    </button>
   </body>
 </html>
