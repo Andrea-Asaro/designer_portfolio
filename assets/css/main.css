@@ -350,8 +350,10 @@
     gap: 0.09em;
     width: 100%;
     margin: 0;
-    /* ~larghezza ottica DADDARIO(0.8em) + gap + rosanna(1.17em) ≈ 7.6–8em */
-    font-size: clamp(2.6rem, 12.4vw, 20rem);
+    /* ~larghezza ottica DADDARIO(0.8em) + gap + rosanna(1.17em) ≈ 7.6–8em.
+       Il lockup è nowrap, quindi il minimo va tenuto sotto la larghezza
+       disponibile a 320px: 2.6rem sbordava di ~11px. */
+    font-size: clamp(2.45rem, 12.4vw, 20rem);
     line-height: 0.82;
   }
 
@@ -837,10 +839,15 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   letter-spacing: -0.02em;
 }
 
+/* svh is the viewport with the browser chrome expanded, i.e. the smallest the
+   screen ever gets, so sizing the hero to it guarantees its content is never
+   cut. Keeping the cover out of sight is a separate job, done by the guard
+   band on .project-cover below -- dvh cannot do it, see that comment. */
 .project-hero {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  min-height: 100vh;
   min-height: 100svh;
   padding-inline: clamp(16px, 4vw, 48px);
   padding-top: clamp(12px, 4vw, 32px);
@@ -874,7 +881,10 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   margin: 0;
   max-width: 14ch;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: clamp(3.25rem, 11vw, 104pt);
+  /* min() against vh as well as vw: on a landscape phone the width is ample
+     but the height is not, and an 11vw title pushed the hero past the screen.
+     The 2.5rem floor is what lets TRANSHUMAN fit a 320px viewport. */
+  font-size: clamp(2.5rem, min(11vw, 18vh), 104pt);
   font-weight: 500;
   line-height: 0.92;
   letter-spacing: -0.045em;
@@ -885,7 +895,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .project-hero__year {
   margin: 0.12em 0 0;
   font-family: "STIX Two Text", serif;
-  font-size: clamp(2.85rem, 9.7vw, 96pt);
+  font-size: clamp(2.19rem, min(9.7vw, 15.9vh), 96pt);
   font-weight: 500;
   font-style: italic;
   line-height: 1;
@@ -916,8 +926,18 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   text-align: right;
 }
 
+/* Guard band under the hero.
+   The hero is 100svh, but on iOS Safari the visible area grows past svh when
+   the toolbar retracts to a pill, and in that difference the cover used to
+   appear before the user had scrolled at all. 100dvh does not fix it: with
+   the pill showing, Safari keeps dvh at the small value while painting the
+   larger area. lvh minus svh is exactly that difference, so pushing the cover
+   down by it puts it out of reach in every toolbar state. Resolves to 0 on
+   desktop, where the three units are equal, and the declaration is simply
+   dropped by engines without lvh/svh, falling back to the 0 above. */
 .project-cover {
   margin-top: 0;
+  margin-top: calc(100lvh - 100svh);
 }
 
 @media (max-width: 860px) {
@@ -1021,11 +1041,15 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   vertical-align: baseline;
 }
 
+/* Everything in the intro is sized in em off --project-intro-title, which
+   bottoms out at 2.25rem below ~815px. Left alone that dropped the body copy
+   to 9.7px and this label to 8.3px on every phone and tablet, so both get a
+   floor and a ceiling; between them the original em ratio still governs. */
 .project-intro__label {
   margin: 0;
   padding-top: 0.25em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 0.231em;
+  font-size: clamp(0.6875rem, 0.231em, 0.875rem);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1039,7 +1063,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   flex-direction: column;
   gap: 0.9em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 0.27em;
+  font-size: clamp(0.9375rem, 0.27em, 1.0625rem);
   font-weight: 400;
   line-height: 1.35;
   letter-spacing: -0.01em;
@@ -1055,6 +1079,16 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
+}
+
+/* Under ~420px the 2.25rem floor of --project-intro-title is wider than the
+   column for the longest words in these headings (INTERDEPENDENCE, ACCESSIBILITY),
+   so below that the scale ramps with the viewport and rejoins 2.25rem at 420px.
+   Body and label keep their own px floors, so nothing becomes unreadable. */
+@media (max-width: 420px) {
+  .project-intro {
+    --project-intro-title: clamp(1.75rem, 8.6vw, 2.25rem);
+  }
 }
 
 @media (max-width: 860px) {
