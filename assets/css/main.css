@@ -1278,3 +1278,103 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
     display: inline;
   }
 }
+
+/* Projects page:
+   progetti raggruppati per anno, 4 tile quadrate per riga a tutta larghezza.
+   Tutte le misure derivano dalla tile (44mm nel mockup), così l'impaginato
+   resta in proporzione a ogni viewport:
+   - anno STIX medium italic e titolo Geist semibold: 14pt su 44mm → 0.112
+   - interlinea titolo 15pt → 0.12
+   - anno → immagine 1.7mm → 0.039
+   - immagine → titolo 2.6mm → 0.059
+   - titolo → anno successivo 6.3mm → 0.143 */
+.projects-years {
+  --cols: 2;
+  container-type: inline-size;
+}
+
+.projects-year {
+  --gap: calc(100cqw * 0.07 / (var(--cols) + (var(--cols) - 1) * 0.07));
+  --tile: calc((100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  --type: calc(var(--tile) * 0.112);
+}
+
+.projects-year + .projects-year {
+  margin-top: calc(var(--tile) * 0.143);
+}
+
+.projects-year__label {
+  /* Abbassata di poco verso l'immagine senza spostare le tile */
+  position: relative;
+  top: calc(var(--tile) * 0.026);
+  margin: 0 0 calc(var(--tile) * 0.039);
+  font-family: "STIX Two Text", serif;
+  font-size: var(--type);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.07;
+  letter-spacing: -0.01em;
+}
+
+.projects-year__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: calc(var(--tile) * 0.1) var(--gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-tile {
+  display: block;
+}
+
+.project-tile:focus-visible {
+  outline-offset: 5px;
+}
+
+.project-tile__media {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f3f3f3;
+}
+
+.project-tile__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms var(--ease);
+}
+
+.project-tile:hover .project-tile__img,
+.project-tile:focus-visible .project-tile__img {
+  transform: scale(1.035);
+}
+
+.project-tile__title {
+  margin: calc(var(--tile) * 0.059) 0 0;
+  font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: var(--type);
+  font-weight: 600;
+  line-height: calc(var(--tile) * 0.12);
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 560px) {
+  .projects-years {
+    --cols: 3;
+  }
+}
+
+@media (min-width: 960px) {
+  .projects-years {
+    --cols: 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-tile__img {
+    transition: none;
+  }
+}
