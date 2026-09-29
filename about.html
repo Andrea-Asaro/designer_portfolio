@@ -162,27 +162,32 @@
 
       <!-- Main content -->
       <main id="content" class="flex flex-1 flex-col">
-        <!-- About content: desktop with left image, centered text, right spacer -->
-        <section class="px-[clamp(16px,4vw,48px)] pt-[clamp(28px,7vh,68px)]">
-          <div class="grid gap-[clamp(28px,5vw,72px)] min-[1024px]:grid-cols-[minmax(180px,240px)_minmax(0,72ch)_minmax(180px,240px)] min-[1024px]:justify-center">
-            <div class="min-[1024px]:sticky min-[1024px]:top-[clamp(24px,4vh,40px)] self-start">
-              <!-- Foto profilo nella colonna sinistra della pagina About -->
+        <!-- About content: portrait on the left edge, text column beside it -->
+        <section class="about-intro px-[clamp(16px,4vw,48px)] pt-[clamp(28px,7vh,68px)]">
+          <div class="about-intro__grid">
+            <!-- Foto profilo: alta quanto le 6 righe del titolo, a filo con "Exhibition" dell'header -->
+            <div class="about-intro__media">
               <img
                 src="assets/img/about-portrait.jpg"
                 alt="Ritratto di Rosanna Daddario"
-                class="aspect-[4/5] w-full object-cover"
+                class="about-intro__portrait"
               />
             </div>
 
-            <!-- Center editorial text column -->
-            <div class="w-full max-w-[72ch] min-[1024px]:mx-auto">
-              <!-- About intro headline -->
-              <h1 class="mt-[10px] max-w-[16ch] font-sans text-[clamp(2.2rem,5.4vw,4.6rem)] font-[650] leading-[0.96] tracking-[-0.05em]">
-                MY <span class="contact-hero-alt">work</span> MOVES ACROSS EXHIBITION DESIGN, RESEARCH, AND THE <span class="contact-hero-alt">relationship</span> BETWEEN SPACE, BODY, AND NARRATIVE
+            <!-- Text column -->
+            <div class="about-intro__main">
+              <!-- About intro headline: stessa scala dei titoli dei progetti -->
+              <h1 class="about-intro__title">
+                MY <span class="about-intro__alt">work</span> MOVES<br class="about-intro__br" />
+                ACROSS EXHIBITION<br class="about-intro__br" />
+                DESIGN, RESEARCH,<br class="about-intro__br" />
+                AND THE <span class="about-intro__alt">relationship</span><br class="about-intro__br" />
+                BETWEEN SPACE, BODY,<br class="about-intro__br" />
+                AND NARRATIVE.
               </h1>
 
-              <!-- About body copy -->
-              <div class="mt-[clamp(24px,4vw,36px)] space-y-[clamp(18px,2.4vw,24px)] font-sans text-[clamp(1.05rem,1.35vw,1.28rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+              <!-- About body copy: stessa scala dei testi descrittivi dei progetti -->
+              <div class="about-intro__body">
                 <p>
                   Hi, I’m Rosanna, a designer from Bari, currently based in Milan.
                   I hold a Bachelor’s degree with Honors in Industrial Design and a Master’s degree in Exhibition Design from Politecnico di Milano (110/110).
@@ -202,54 +207,45 @@
               </div>
 
               <!-- Skills section -->
-              <section class="mt-[clamp(44px,7vw,72px)] border-t border-hairline pt-[clamp(22px,3vw,30px)]" aria-labelledby="skills-title">
-                <!-- Skills heading and intro -->
-                <h2
-                  id="skills-title"
-                  class="mt-[10px] font-sans text-[clamp(1.9rem,4vw,3rem)] font-[650] uppercase leading-[0.96] tracking-[-0.04em]"
-                >
-                  Skills and practice
-                </h2>
+              <section class="about-skills" aria-labelledby="skills-title">
+                <h2 id="skills-title" class="about-skills__title">Skills and practice</h2>
 
-                <p class="mt-[clamp(18px,2.5vw,22px)] max-w-[68ch] font-sans italic text-[clamp(1.05rem,1.35vw,1.2rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+                <p class="about-skills__intro">
                   A focused set of tools and practices that support the development, communication, and atmosphere of each project.
                 </p>
 
                 <!-- Skills list -->
-                <div class="mt-[clamp(24px,3vw,34px)] grid gap-[clamp(18px,2vw,24px)]">
-                  <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em] text-muted">[Modeling &amp; Prototyping]</h3>
-                    <p class="mt-[8px] font-sans italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+                <div class="about-skills__list">
+                  <article class="about-skills__item">
+                    <h3 class="about-skills__label">[Modeling &amp; Prototyping]</h3>
+                    <p class="about-skills__text">
                       3D modeling in Rhinoceros for complex geometries and prototype development workflows.
                     </p>
                   </article>
 
-                  <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em] text-muted">[CAD Design]</h3>
-                    <p class="mt-[8px] font-sans italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+                  <article class="about-skills__item">
+                    <h3 class="about-skills__label">[CAD Design]</h3>
+                    <p class="about-skills__text">
                       Technical drawings and construction details supporting design development and production processes.
                     </p>
                   </article>
 
-                  <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em] text-muted">[Rendering]</h3>
-                    <p class="mt-[8px] font-sans italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+                  <article class="about-skills__item">
+                    <h3 class="about-skills__label">[Rendering]</h3>
+                    <p class="about-skills__text">
                       Visualisation in Enscape with post-production focused on materials, light, and atmosphere.
                     </p>
                   </article>
 
-                  <article class="border-t border-hairline pt-[16px]">
-                    <h3 class="font-sans text-[1rem] font-[650] uppercase tracking-[-0.02em] text-muted">[Visual Communication]</h3>
-                    <p class="mt-[8px] font-sans italic text-[clamp(1rem,1.2vw,1.12rem)] leading-[1.66] tracking-[-0.01em] text-ink">
+                  <article class="about-skills__item">
+                    <h3 class="about-skills__label">[Visual Communication]</h3>
+                    <p class="about-skills__text">
                       Graphic design and visual systems using Adobe Suite for project presentations and identity development.
                     </p>
                   </article>
                 </div>
               </section>
             </div>
-
-            <!-- Right balancing spacer -->
-            <div class="hidden min-[1024px]:block" aria-hidden="true"></div>
           </div>
         </section>
 
