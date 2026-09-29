@@ -1136,6 +1136,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 .projects-year__label {
+  /* Abbassata di poco verso l'immagine senza spostare le tile */
+  position: relative;
+  top: calc(var(--tile) * 0.026);
   margin: 0 0 calc(var(--tile) * 0.039);
   font-family: "STIX Two Text", serif;
   font-size: var(--type);
