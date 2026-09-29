@@ -1111,6 +1111,174 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   }
 }
 
+/* About page:
+   titolo e testo usano la stessa scala di .project-intro, così la pagina
+   parla la stessa lingua dei progetti. La foto è alta quanto le 6 righe del
+   titolo e parte dal bordo sinistro dell'header ("Exhibition / Spatial Design"). */
+.about-intro {
+  --about-title: clamp(2.25rem, 4.6vw, 3.75rem);
+  --about-title-lh: 1.055;
+  --about-body: clamp(0.9375rem, calc(var(--about-title) * 0.27), 1.0625rem);
+}
+
+.about-intro__grid {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.about-intro__media {
+  align-self: start;
+}
+
+.about-intro__portrait {
+  display: block;
+  width: min(100%, 320px);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.about-intro__main {
+  min-width: 0;
+}
+
+.about-intro__title {
+  margin: 0;
+  font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: var(--about-title);
+  font-weight: 600;
+  line-height: var(--about-title-lh);
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: #0b0b0b;
+}
+
+.about-intro__alt {
+  font-family: "STIX Two Text", serif;
+  font-size: 1.47em;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  /* Line-height ridotto: le parole italic non alzano la riga, così le 6 righe
+     restano identiche e l'altezza della foto si può calcolare */
+  line-height: 0.5;
+  vertical-align: baseline;
+}
+
+/* Le 6 righe del mockup valgono solo da desktop: sotto il testo va a capo da sé */
+.about-intro__br {
+  display: none;
+}
+
+.about-intro__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  max-width: 32em;
+  margin-top: clamp(28px, 3.4vw, 48px);
+  font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: var(--about-body);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: #0b0b0b;
+}
+
+.about-intro__body p {
+  margin: 0;
+}
+
+/* Skills: titolo a metà della scala del titolo grande, voci più compatte
+   con la linea divisoria a metà tra un testo e l'altro */
+.about-skills {
+  --about-skills-gap: 14px;
+  max-width: calc(var(--about-body) * 32);
+  margin-top: clamp(44px, 6vw, 72px);
+  padding-top: clamp(22px, 3vw, 30px);
+  border-top: 1px solid rgba(11, 11, 11, 0.1);
+  font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.about-skills__title {
+  margin: 0;
+  font-size: calc(var(--about-title) * 0.5);
+  font-weight: 600;
+  line-height: 1.055;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.about-skills__intro {
+  margin: 12px 0 0;
+  font-size: var(--about-body);
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.about-skills__list {
+  margin-top: var(--about-skills-gap);
+}
+
+.about-skills__item {
+  padding-block: var(--about-skills-gap);
+  border-top: 1px solid rgba(11, 11, 11, 0.1);
+}
+
+.about-skills__item:last-child {
+  padding-bottom: 0;
+}
+
+.about-skills__label {
+  margin: 0;
+  font-size: clamp(0.6875rem, calc(var(--about-title) * 0.231), 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 11, 0.48);
+}
+
+.about-skills__text {
+  margin: 6px 0 0;
+  font-size: var(--about-body);
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 420px) {
+  .about-intro {
+    --about-title: clamp(1.75rem, 8.6vw, 2.25rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-intro__grid {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .about-intro__media {
+    position: sticky;
+    top: clamp(24px, 4vh, 40px);
+  }
+
+  /* Geist: baseline a 0.891em dal top della riga, cap-height 0.71em.
+     La foto va dal cap di "MY" alla baseline di "NARRATIVE.":
+     top = 0.891 - 0.71 = 0.181em, altezza = 5 righe + cap-height */
+  .about-intro__media {
+    margin-top: calc(var(--about-title) * 0.181);
+  }
+
+  .about-intro__portrait {
+    height: calc(var(--about-title) * (var(--about-title-lh) * 5 + 0.71));
+    width: auto;
+  }
+
+  .about-intro__br {
+    display: inline;
+  }
+}
+
 /* Projects page:
    progetti raggruppati per anno, 4 tile quadrate per riga a tutta larghezza.
    Tutte le misure derivano dalla tile (44mm nel mockup), così l'impaginato
