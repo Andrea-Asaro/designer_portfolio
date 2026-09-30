@@ -37,6 +37,13 @@
       };
     </script>
 
+    <!-- Comparsa dei testi: li nasconde prima del primo paint -->
+    <script>
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("has-reveal", "has-reveal-media");
+      }
+    </script>
+
     <!-- CSS e JS condivisi -->
     <link rel="stylesheet" href="assets/css/main.css" />
     <script defer src="assets/js/main.js"></script>
@@ -59,8 +66,8 @@
       >
         <!-- Header top row -->
         <div class="flex items-start justify-between gap-4 min-[861px]:block">
-          <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
-            Exhibition / Spatial Design
+          <span class="font-sans text-[1.1rem] font-[650] tracking-[-0.01em]">
+            Exhibition | Spatial Design
           </span>
 
           <button
@@ -78,32 +85,26 @@
         <!-- Desktop nav -->
         <nav aria-label="Navigazione principale" class="hidden min-[861px]:block">
           <ul
-            class="m-0 flex list-none flex-wrap items-center justify-start gap-[clamp(14px,2.2vw,28px)] p-0 min-[861px]:justify-center"
+            class="m-0 flex list-none flex-wrap items-center justify-start nav-list gap-0 p-0 min-[861px]:justify-center"
           >
             <li>
               <a
                 href="index.html"
-                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                Home
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >Home</a>
             </li>
             <li>
               <a
                 href="projects.html"
-                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                Projects
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >Projects</a>
             </li>
             <li>
               <a
                 href="about.html"
                 aria-current="page"
-                class="nav-link font-sans text-[0.95rem] font-[650] tracking-[-0.01em] text-ink"
-              >
-                About
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-ink"
+              >About</a>
             </li>
           </ul>
         </nav>
@@ -111,7 +112,7 @@
         <!-- Desktop contact link -->
         <div class="hidden min-[861px]:block min-[861px]:justify-self-end">
           <a
-            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+            class="uline-double font-sans text-[1.1rem] font-[650] tracking-[-0.01em]"
             href="contactMe.html"
           >
             Contact me
@@ -128,8 +129,8 @@
         <div class="mobile-menu__panel">
           <!-- Mobile menu top -->
           <div class="mobile-menu__top">
-            <span class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em]">
-                Exhibition / Spatial Design
+            <span class="font-sans text-[1.1rem] font-[650] tracking-[-0.01em]">
+                Exhibition | Spatial Design
             </span>
 
             <button
@@ -167,17 +168,20 @@
           <div class="about-intro__grid">
             <!-- Foto profilo: alta quanto le 6 righe del titolo, a filo con "Exhibition" dell'header -->
             <div class="about-intro__media">
-              <img
-                src="assets/img/about-portrait.jpg"
-                alt="Ritratto di Rosanna Daddario"
-                class="about-intro__portrait"
-              />
+              <!-- Cornice della foto: contiene il reveal senza allargarsi oltre l'immagine -->
+              <div class="about-intro__frame" data-reveal-media>
+                <img
+                  src="assets/img/about-portrait.jpg"
+                  alt="Ritratto di Rosanna Daddario"
+                  class="about-intro__portrait"
+                />
+              </div>
             </div>
 
             <!-- Text column -->
             <div class="about-intro__main">
               <!-- About intro headline: stessa scala dei titoli dei progetti -->
-              <h1 class="about-intro__title">
+              <h1 data-reveal class="about-intro__title">
                 MY <span class="about-intro__alt">work</span> MOVES<br class="about-intro__br" />
                 ACROSS EXHIBITION<br class="about-intro__br" />
                 DESIGN, RESEARCH,<br class="about-intro__br" />
@@ -187,7 +191,7 @@
               </h1>
 
               <!-- About body copy: stessa scala dei testi descrittivi dei progetti -->
-              <div class="about-intro__body">
+              <div data-reveal class="about-intro__body">
                 <p>
                   Hi, I’m Rosanna, a designer from Bari, currently based in Milan.
                   I hold a Bachelor’s degree with Honors in Industrial Design and a Master’s degree in Exhibition Design from Politecnico di Milano (110/110).
@@ -208,36 +212,36 @@
 
               <!-- Skills section -->
               <section class="about-skills" aria-labelledby="skills-title">
-                <h2 id="skills-title" class="about-skills__title">Skills and practice</h2>
+                <h2 data-reveal id="skills-title" class="about-skills__title">Skills and practice</h2>
 
-                <p class="about-skills__intro">
+                <p data-reveal class="about-skills__intro">
                   A focused set of tools and practices that support the development, communication, and atmosphere of each project.
                 </p>
 
                 <!-- Skills list -->
                 <div class="about-skills__list">
-                  <article class="about-skills__item">
+                  <article data-reveal class="about-skills__item">
                     <h3 class="about-skills__label">[Modeling &amp; Prototyping]</h3>
                     <p class="about-skills__text">
                       3D modeling in Rhinoceros for complex geometries and prototype development workflows.
                     </p>
                   </article>
 
-                  <article class="about-skills__item">
+                  <article data-reveal class="about-skills__item">
                     <h3 class="about-skills__label">[CAD Design]</h3>
                     <p class="about-skills__text">
                       Technical drawings and construction details supporting design development and production processes.
                     </p>
                   </article>
 
-                  <article class="about-skills__item">
+                  <article data-reveal class="about-skills__item">
                     <h3 class="about-skills__label">[Rendering]</h3>
                     <p class="about-skills__text">
                       Visualisation in Enscape with post-production focused on materials, light, and atmosphere.
                     </p>
                   </article>
 
-                  <article class="about-skills__item">
+                  <article data-reveal class="about-skills__item">
                     <h3 class="about-skills__label">[Visual Communication]</h3>
                     <p class="about-skills__text">
                       Graphic design and visual systems using Adobe Suite for project presentations and identity development.

@@ -749,3 +749,228 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
+
+/* Projects deck:
+   all'arrivo le immagini sono già in volo da un mazzo al centro della viewport
+   verso la propria cella della griglia (il mazzo chiuso non si vede mai);
+   solo alla fine compaiono anni e titoli.
+   Curva e durata del volo sono quelle dell'intro della home. */
+document.addEventListener("DOMContentLoaded", () => {
+	const root = document.documentElement;
+	if (!root.classList.contains("has-deck")) return;
+
+	const cards = Array.from(document.querySelectorAll(".projects-year__grid .project-tile__media"));
+	const texts = Array.from(document.querySelectorAll(".projects-year__label, .project-tile__title"));
+	if (!cards.length || typeof Element.prototype.animate !== "function") {
+		root.classList.remove("has-deck");
+		return;
+	}
+
+	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+	const FADE_IN = 400; // le carte compaiono mentre sono già in movimento
+	const HEAD_START = 20; // al primo frame la distribuzione è quasi all'inizio
+	const STAGGER = 70; // ogni carta atterra un po' dopo la precedente
+	const DEAL = 1450; // volo della prima carta (come il FLIP della home)
+	const TEXT_IN = 900; // comparsa di anni e titoli
+	const MAX_WAIT = 600; // attesa massima delle immagini prima di partire
+
+	/* Tutte le immagini vanno caricate e decodificate prima del volo,
+	   altrimenti la decodifica a metà animazione crea scatti */
+	const images = cards.map((card) => card.querySelector("img")).filter(Boolean);
+	images.forEach((img) => {
+		img.loading = "eager";
+	});
+	const decoded = Promise.all(images.map((img) => (img.decode ? img.decode().catch(() => {}) : null)));
+	const timeout = new Promise((resolve) => window.setTimeout(resolve, MAX_WAIT));
+
+	const deal = () => {
+		/* Mazzo centrato nella viewport visibile */
+		const deckX = window.innerWidth / 2;
+		const deckY = window.innerHeight / 2;
+
+		cards.forEach((card, i) => {
+			const rect = card.getBoundingClientRect();
+			const dx = deckX - (rect.left + rect.width / 2);
+			const dy = deckY - (rect.top + rect.height / 2) - i; // spessore del mazzo
+			const tilt = (i % 2 ? 1 : -1) * (0.6 + ((i * 7) % 4) * 0.35);
+
+			/* La prima carta distribuita è quella in cima al mazzo */
+			card.classList.add("is-dealing");
+			card.style.zIndex = String(cards.length - i);
+
+			/* Partono tutte insieme e nessuna resta ferma nel mazzo:
+			   la distribuzione nasce dalla durata, che cresce di carta in carta */
+			card.animate(
+				[
+					{ transform: `translate3d(${dx}px, ${dy}px, 0) rotate(${tilt}deg) scale(0.9)` },
+					{ transform: "translate3d(0, 0, 0) rotate(0deg) scale(1)" },
+				],
+				{ duration: DEAL + i * STAGGER, delay: -HEAD_START, easing: EASE, fill: "backwards" }
+			);
+
+			card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN, easing: EASE, fill: "backwards" });
+		});
+
+		/* Anni e titoli restano nascosti finché l'ultima carta non ha quasi finito */
+		const dealEnd = DEAL + (cards.length - 1) * STAGGER - HEAD_START;
+		const textDelay = dealEnd - DEAL * 0.4;
+		texts.forEach((text, i) => {
+			text.animate(
+				[
+					{ opacity: 0, transform: "translate3d(0, 14px, 0)" },
+					{ opacity: 1, transform: "none" },
+				],
+				{ duration: TEXT_IN, delay: textDelay + Math.min(i, 8) * 40, easing: EASE, fill: "backwards" }
+			);
+		});
+
+		root.classList.remove("has-deck");
+
+		/* Timer invece di animation.finished: le promise non si risolvono
+		   se la scheda è in background o non renderizza frame */
+		window.setTimeout(() => {
+			cards.forEach((card) => {
+				card.classList.remove("is-dealing");
+				card.style.zIndex = "";
+			});
+		}, dealEnd);
+	};
+
+	Promise.race([decoded, timeout]).then(() => window.requestAnimationFrame(deal));
+});
+
+/* Text reveal:
+   stessa comparsa dei testi della pagina projects (salita di 14px + fade,
+   curva dell'intro della home), un elemento [data-reveal] dopo l'altro */
+document.addEventListener("DOMContentLoaded", () => {
+	const root = document.documentElement;
+	if (!root.classList.contains("has-reveal")) return;
+
+	const items = Array.from(document.querySelectorAll("[data-reveal]"));
+	if (!items.length || typeof Element.prototype.animate !== "function") {
+		root.classList.remove("has-reveal", "has-reveal-media");
+		return;
+	}
+
+	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+	const TEXT_IN = 900;
+	const STAGGER = 40;
+	const START = 180; // come il page-in della home
+
+	items.forEach((item, i) => {
+		item.animate(
+			[
+				{ opacity: 0, transform: "translate3d(0, 14px, 0)" },
+				{ opacity: 1, transform: "none" },
+			],
+			{ duration: TEXT_IN, delay: START + i * STAGGER, easing: EASE, fill: "backwards" }
+		);
+	});
+
+	root.classList.remove("has-reveal");
+
+	/* Immagini [data-reveal-media] (foto about): stesso reveal delle pagine progetto,
+	   insieme al primo testo. has-reveal-media resta: le regole CSS ne dipendono */
+	const media = Array.from(document.querySelectorAll("[data-reveal-media]"));
+	window.setTimeout(() => {
+		media.forEach((el) => el.classList.add("is-in"));
+	}, START);
+});
+
+/* Project pages:
+   titolo hero lettera per lettera all'apertura, poi anno e meta;
+   cover, galleria e testi dell'intro entrano quando arrivano nella viewport */
+document.addEventListener("DOMContentLoaded", () => {
+	const root = document.documentElement;
+	if (!root.classList.contains("has-project-motion")) return;
+
+	const title = document.querySelector(".project-hero__title");
+	const LETTER_STAGGER = 40;
+	const TEXT_STAGGER = 40;
+
+	/* Titolo: ogni parola è una maschera, ogni lettera sale al suo interno.
+	   Il testo originale resta disponibile agli screen reader tramite aria-label */
+	let letterCount = 0;
+	if (title) {
+		title.setAttribute("aria-label", title.textContent.replace(/\s+/g, " ").trim());
+
+		const splitNode = (node) => {
+			if (node.nodeType === Node.TEXT_NODE) {
+				const fragment = document.createDocumentFragment();
+				node.textContent.split(/(\s+)/).forEach((part) => {
+					if (!part) return;
+					if (/^\s+$/.test(part)) {
+						fragment.appendChild(document.createTextNode(" "));
+						return;
+					}
+					const word = document.createElement("span");
+					word.className = "project-title__word";
+					word.setAttribute("aria-hidden", "true");
+					Array.from(part).forEach((char) => {
+						const letter = document.createElement("span");
+						letter.className = "project-title__letter";
+						letter.textContent = char;
+						letter.style.transitionDelay = `${letterCount * LETTER_STAGGER}ms`;
+						letterCount += 1;
+						word.appendChild(letter);
+					});
+					fragment.appendChild(word);
+				});
+				node.replaceWith(fragment);
+				return;
+			}
+			Array.from(node.childNodes).forEach(splitNode);
+		};
+
+		Array.from(title.childNodes).forEach(splitNode);
+	}
+
+	/* Anno e meta dopo il titolo */
+	const heroTexts = Array.from(document.querySelectorAll(".project-hero__year, .project-hero__meta-item"));
+	const heroTextsStart = 300 + letterCount * LETTER_STAGGER;
+	heroTexts.forEach((el, i) => {
+		el.style.transitionDelay = `${heroTextsStart + i * 80}ms`;
+	});
+
+	/* Cover e immagini della galleria */
+	const media = Array.from(document.querySelectorAll(".project-cover figure, section[aria-label^='Galleria'] figure"));
+	media.forEach((figure) => figure.classList.add("project-media"));
+
+	/* Testi dell'intro, in ordine di lettura */
+	const introTexts = Array.from(
+		document.querySelectorAll(
+			".project-intro__index, .project-intro__title, .project-intro__label, .project-intro__body > p"
+		)
+	);
+	introTexts.forEach((el, i) => {
+		el.style.transitionDelay = `${i * TEXT_STAGGER}ms`;
+	});
+
+	/* Due frame: il browser registra lo stato iniziale prima di far partire le transition */
+	window.requestAnimationFrame(() => {
+		window.requestAnimationFrame(() => {
+			title?.classList.add("is-in");
+			heroTexts.forEach((el) => el.classList.add("is-in"));
+		});
+	});
+
+	const reveal = (el) => el.classList.add("is-in");
+
+	if (!("IntersectionObserver" in window)) {
+		[...media, ...introTexts].forEach(reveal);
+		return;
+	}
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				if (!entry.isIntersecting) return;
+				reveal(entry.target);
+				observer.unobserve(entry.target);
+			});
+		},
+		{ rootMargin: "0px 0px -12% 0px", threshold: 0.01 }
+	);
+
+	[...media, ...introTexts].forEach((el) => observer.observe(el));
+});

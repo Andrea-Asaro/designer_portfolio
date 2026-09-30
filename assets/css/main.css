@@ -144,8 +144,11 @@
     flex: 0 0 var(--meta-h);
     min-height: var(--meta-h);
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     padding-inline: 0;
-    padding-bottom: 14px;
+    padding-bottom: 8px;
     text-align: left;
     transform: translateY(0);
     transition: transform 220ms var(--ease);
@@ -460,11 +463,59 @@
     }
   }
 
+/* Desktop nav: voci separate da virgola (Home,Projects,About) */
+.nav-list li:not(:last-child) .nav-link::after {
+  content: ",";
+  margin-right: 0.2em;
+}
+
+/* Contact me: la linea esce a destra e una nuova rientra da sinistra */
+.uline-double {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.uline-double::before,
+.uline-double::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background-color: currentColor;
+  transition: transform 0.55s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.uline-double::before {
+  transform-origin: left;
+  transform: scaleX(1);
+  transition-delay: 0.5s;
+}
+
+.uline-double::after,
+.uline-double:hover::before,
+.uline-double:focus-visible::before {
+  transform-origin: right;
+  transform: scaleX(0);
+  transition-delay: 0s;
+}
+
+.uline-double:hover::after,
+.uline-double:focus-visible::after {
+  transform-origin: left;
+  transform: scaleX(1);
+  transition-delay: 0.2s;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
 
   .skip-link,
   .nav-link,
+  .uline-double::before,
+  .uline-double::after,
   .work-meta,
   .work-media,
   .work-card,
@@ -525,7 +576,7 @@
     .work-meta {
       flex-basis: var(--meta-h);
       min-height: var(--meta-h);
-      padding-bottom: 10px;
+      padding-bottom: 6px;
     }
   }
 
@@ -1130,6 +1181,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   align-self: start;
 }
 
+.about-intro__frame {
+  width: fit-content;
+  max-width: 100%;
+}
+
 .about-intro__portrait {
   display: block;
   width: min(100%, 320px);
@@ -1178,7 +1234,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   margin-top: clamp(28px, 3.4vw, 48px);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--about-body);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.01em;
   color: #0b0b0b;
@@ -1211,7 +1267,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-skills__intro {
   margin: 12px 0 0;
   font-size: var(--about-body);
-  font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.01em;
 }
@@ -1241,7 +1297,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-skills__text {
   margin: 6px 0 0;
   font-size: var(--about-body);
-  font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.01em;
 }
@@ -1307,11 +1363,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   /* Abbassata di poco verso l'immagine senza spostare le tile */
   position: relative;
   top: calc(var(--tile) * 0.026);
-  margin: 0 0 calc(var(--tile) * 0.039);
+  margin: 0 0 calc(var(--tile) * 0.029); /* spazio tra il testo e l'immagine */
   font-family: "STIX Two Text", serif;
   font-size: var(--type);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.07;
   letter-spacing: -0.01em;
 }
@@ -1353,7 +1409,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 .project-tile__title {
-  margin: calc(var(--tile) * 0.059) 0 0;
+  margin: calc(var(--tile) * 0.029) 0 0;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--type);
   font-weight: 600;
@@ -1377,4 +1433,112 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   .project-tile__img {
     transition: none;
   }
+}
+
+/* Pagine progetto (has-project-motion, aggiunta nell'head):
+   - titolo hero: lettere che salgono da una maschera, come l'intro della home
+   - anno, meta e testi dell'intro: salita di 14px + fade
+   - cover e galleria: reveal dal basso con clip-path e leggero zoom che si assesta */
+.project-title__word {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  vertical-align: top;
+}
+
+.project-title__letter {
+  display: inline-block;
+  transform: translate3d(0, 105%, 0);
+}
+
+html.has-project-motion .project-title__letter {
+  transition: transform 1.15s var(--ease);
+}
+
+html.has-project-motion .project-hero__title.is-in .project-title__letter {
+  transform: translate3d(0, 0, 0);
+}
+
+html.has-project-motion .project-hero__year,
+html.has-project-motion .project-hero__meta-item,
+html.has-project-motion .project-intro__index,
+html.has-project-motion .project-intro__title,
+html.has-project-motion .project-intro__label,
+html.has-project-motion .project-intro__body > p {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease);
+}
+
+html.has-project-motion .is-in.project-hero__year,
+html.has-project-motion .is-in.project-hero__meta-item,
+html.has-project-motion .is-in.project-intro__index,
+html.has-project-motion .is-in.project-intro__title,
+html.has-project-motion .is-in.project-intro__label,
+html.has-project-motion .project-intro__body > p.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Velo bianco che si ritira verso l'alto: l'immagine si scopre dal basso.
+   Niente clip-path sulla figure, altrimenti l'IntersectionObserver non la vede */
+html.has-project-motion .project-media,
+html.has-reveal-media [data-reveal-media] {
+  position: relative;
+  overflow: hidden;
+}
+
+html.has-project-motion .project-media::after,
+html.has-reveal-media [data-reveal-media]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  transform-origin: top;
+  transition: transform 1.05s var(--ease);
+  pointer-events: none;
+}
+
+html.has-project-motion .project-media > img,
+html.has-project-motion .project-media > video,
+html.has-reveal-media [data-reveal-media] > img {
+  transform: scale(1.08);
+  transition: transform 1.45s var(--ease);
+}
+
+html.has-project-motion .project-media.is-in::after,
+html.has-reveal-media [data-reveal-media].is-in::after {
+  transform: scaleY(0);
+}
+
+html.has-project-motion .project-media.is-in > img,
+html.has-project-motion .project-media.is-in > video,
+html.has-reveal-media [data-reveal-media].is-in > img {
+  transform: none;
+}
+
+/* Comparsa dei testi (pagina contatti): nascosti finché il JS non li anima */
+html.has-reveal [data-reveal] {
+  opacity: 0;
+}
+
+/* Projects: immagini distribuite da un mazzo di carte.
+   has-deck nasconde tutto finché il JS non raccoglie le immagini nel mazzo */
+html.has-deck .projects-year__label,
+html.has-deck .project-tile__media,
+html.has-deck .project-tile__title {
+  opacity: 0;
+}
+
+.projects-year__grid .project-tile__media {
+  transition: box-shadow 0.9s var(--ease);
+}
+
+.projects-year__grid .project-tile__media.is-dealing {
+  position: relative;
+  box-shadow: 0 18px 40px -18px rgba(11, 11, 11, 0.22);
+  will-change: transform;
 }
