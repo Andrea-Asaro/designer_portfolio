@@ -37,6 +37,13 @@
       };
     </script>
 
+    <!-- Animazioni pagina progetto: nasconde gli elementi prima del primo paint -->
+    <script>
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("has-project-motion");
+      }
+    </script>
+
     <!-- CSS e JS condivisi -->
     <link rel="stylesheet" href="assets/css/main.css" />
     <script defer src="assets/js/main.js"></script>
@@ -78,31 +85,25 @@
         <!-- Desktop nav -->
         <nav aria-label="Navigazione principale" class="hidden min-[861px]:block">
           <ul
-            class="m-0 flex list-none flex-wrap items-center justify-start gap-[clamp(14px,2.2vw,28px)] p-0 min-[861px]:justify-center"
+            class="m-0 flex list-none flex-wrap items-center justify-start nav-list gap-0 p-0 min-[861px]:justify-center"
           >
             <li>
               <a
                 href="index.html"
-                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                Home
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >Home</a>
             </li>
             <li>
               <a
                 href="projects.html"
-                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                Projects
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >Projects</a>
             </li>
             <li>
               <a
                 href="about.html"
-                class="nav-link font-sans text-[0.95rem] tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
-              >
-                About
-              </a>
+                class="nav-link font-sans text-[1.1rem] font-medium tracking-[-0.01em] text-muted transition-colors duration-200 ease-editorial hover:text-ink"
+              >About</a>
             </li>
           </ul>
         </nav>
@@ -110,7 +111,7 @@
         <!-- Desktop contact link -->
         <div class="hidden min-[861px]:block min-[861px]:justify-self-end">
           <a
-            class="font-sans text-[0.95rem] font-[650] tracking-[-0.01em] underline decoration-[1px] underline-offset-[5px]"
+            class="uline-double font-sans text-[1.1rem] font-[650] tracking-[-0.01em]"
             href="contactMe.html"
           >
             Contact me
