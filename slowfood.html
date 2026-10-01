@@ -44,9 +44,27 @@
       }
     </script>
 
+    <!-- Arrivo dalla home: l'immagine cliccata è già al suo posto al primo paint -->
+    <script>
+      try {
+        var flight = JSON.parse(sessionStorage.getItem("pageFlight") || "null");
+        var fresh = flight && Date.now() - flight.at < 5000 && flight.to === location.pathname;
+        if (fresh && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          var rootStyle = document.documentElement.style;
+          document.documentElement.classList.add("has-flight");
+          rootStyle.setProperty("--flight-src", 'url("' + flight.src + '")');
+          rootStyle.setProperty("--flight-x", flight.rect.left + "px");
+          rootStyle.setProperty("--flight-y", flight.rect.top + "px");
+          rootStyle.setProperty("--flight-w", flight.rect.width + "px");
+          rootStyle.setProperty("--flight-h", flight.rect.height + "px");
+        } else if (flight) {
+          sessionStorage.removeItem("pageFlight");
+        }
+      } catch (_) {}
+    </script>
     <!-- CSS e JS condivisi -->
-    <link rel="stylesheet" href="assets/css/main.css?v=20260930" />
-    <script defer src="assets/js/main.js?v=20260930"></script>
+    <link rel="stylesheet" href="assets/css/main.css?v=20261001" />
+    <script defer src="assets/js/main.js?v=20261001"></script>
   </head>
 
   <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
