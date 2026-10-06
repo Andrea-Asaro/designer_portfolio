@@ -44,15 +44,17 @@
   
   /* Contact mixed-font heading:
    STIX has a smaller x-height than Geist, so this slightly enlarges
-   the serif words to match the sans words optically rather than mathematically */
+   the serif words to match the sans words optically rather than mathematically.
+   Inline con line-height ridotto (come .about-intro__alt): le parole italic
+   non alzano la propria riga, così tutte le righe del titolo hanno lo stesso passo */
 .contact-hero-alt {
-  display: inline-block;
   font-family: "STIX Two Text", serif;
   font-style: italic;
   font-weight: 400;
   font-size: 1.5em;
   letter-spacing: -0.02em;
-  transform: translateY(0.01em);
+  line-height: 0.5;
+  vertical-align: baseline;
 }
 
 
@@ -911,8 +913,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   /* Rapporto 2∶1 (cover→titolo : titolo→testo); scala generosa sul titolo */
   --project-intro-gap-cover: calc(var(--project-intro-title) * 1.38);
   --project-intro-gap-text: calc(var(--project-intro-gap-cover) * 0.5);
-  /* Dalla line-box (alzata dall'italic) ai cap-height di DESIGN */
-  --project-intro-cap-offset: calc(var(--project-intro-title) * 0.407);
+  /* Dal top della line-box ai cap-height della prima riga (misurato: le
+     parole italic non alzano più la riga, quindi vale per tutti i titoli) */
+  --project-intro-cap-offset: calc(var(--project-intro-title) * 0.157);
   /* Screenshot: colonna titolo ≈ metà della cover, centrata sotto */
   --project-intro-col: 50%;
   position: relative;
@@ -933,8 +936,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   left: 0;
   top: 0;
   margin: 0;
-  /* Allinea i cap-height di 1/ a DESIGN */
-  padding-top: var(--project-intro-cap-offset);
+  /* Allinea i cap-height di 01/ a quelli del titolo: dentro la sua riga
+     (line-height 1) il cap di 01/ parte già 0.043 del titolo più in basso */
+  padding-top: calc(var(--project-intro-cap-offset) - var(--project-intro-title) * 0.043);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: calc(var(--project-intro-title) * 0.386);
   font-weight: 500;
@@ -984,7 +988,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   font-style: italic;
   letter-spacing: -0.01em;
   text-transform: none;
-  line-height: 1;
+  /* Come .about-intro__alt: le parole italic non alzano la propria riga,
+     così tutte le righe del titolo hanno lo stesso passo */
+  line-height: 0.5;
   vertical-align: baseline;
 }
 
@@ -1009,9 +1015,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.9em;
+  /* Una riga vuota tra i paragrafi, come nella pagina About */
+  gap: 1.35em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: clamp(0.9375rem, 0.27em, 1.0625rem);
+  /* Stessa dimensione dei testi di About e dei titoli delle card in home */
+  font-size: 1.02rem;
   font-weight: 400;
   line-height: 1.35;
   letter-spacing: -0.01em;
@@ -1027,6 +1035,24 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
+}
+
+/* A capo del mockup (solo desktop): titolo e testo con --lines vanno a capo
+   solo sui <br>. Le righe possono sporgere a destra della colonna, come il
+   titolo nel mockup; sotto i 1024px il testo torna a capo da solo */
+.project-intro__br {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .project-intro__br {
+    display: inline;
+  }
+
+  .project-intro__title--lines,
+  .project-intro__body--lines p {
+    white-space: nowrap;
+  }
 }
 
 /* Under ~420px the 2.25rem floor of --project-intro-title is wider than the
