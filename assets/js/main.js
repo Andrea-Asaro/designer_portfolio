@@ -1,3 +1,7 @@
+/* Moltiplicatore delle durate, letto da --motion in main.css (unica fonte).
+   Vale per tutte le animazioni tranne l'intro della home, che ha i suoi tempi */
+const MOTION = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--motion")) || 1;
+
 /* Homepage intro:
    brand letter-reveal → split → FLIP settle into page layout */
 document.addEventListener("DOMContentLoaded", () => {
@@ -645,11 +649,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-	const FADE_IN = 480; // le carte compaiono mentre sono già in movimento
-	const HEAD_START = 24; // al primo frame la distribuzione è quasi all'inizio
-	const STAGGER = 84; // ogni carta atterra un po' dopo la precedente
-	const DEAL = 1740; // volo della prima carta (come il FLIP della home)
-	const TEXT_IN = 1080; // comparsa di anni e titoli
+	const FADE_IN = 480 * MOTION; // le carte compaiono mentre sono già in movimento
+	const HEAD_START = 24 * MOTION; // al primo frame la distribuzione è quasi all'inizio
+	const STAGGER = 84 * MOTION; // ogni carta atterra un po' dopo la precedente
+	const DEAL = 1740 * MOTION; // volo della prima carta (come il FLIP della home)
+	const TEXT_IN = 1080 * MOTION; // comparsa di anni e titoli
 	const MAX_WAIT = 600; // attesa massima delle immagini prima di partire
 
 	/* Tutte le immagini vanno caricate e decodificate prima del volo,
@@ -698,7 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					{ opacity: 0, transform: "translate3d(0, 14px, 0)" },
 					{ opacity: 1, transform: "none" },
 				],
-				{ duration: TEXT_IN, delay: textDelay + Math.min(i, 8) * 48, easing: EASE, fill: "backwards" }
+				{ duration: TEXT_IN, delay: textDelay + Math.min(i, 8) * 48 * MOTION, easing: EASE, fill: "backwards" }
 			);
 		});
 
@@ -731,9 +735,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-	const TEXT_IN = 1080;
-	const STAGGER = 48;
-	const START = 216; // come il page-in della home
+	const TEXT_IN = 1080 * MOTION;
+	const STAGGER = 48 * MOTION;
+	const START = 216 * MOTION; // come il page-in della home
 
 	items.forEach((item, i) => {
 		item.animate(
@@ -763,8 +767,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (!root.classList.contains("has-project-motion")) return;
 
 	const title = document.querySelector(".project-hero__title");
-	const LETTER_STAGGER = 48;
-	const TEXT_STAGGER = 48;
+	const LETTER_STAGGER = 48 * MOTION;
+	const TEXT_STAGGER = 48 * MOTION;
 
 	/* Titolo: ogni parola è una maschera, ogni lettera sale al suo interno.
 	   Il testo originale resta disponibile agli screen reader tramite aria-label */
@@ -805,9 +809,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	/* Anno e meta dopo il titolo */
 	const heroTexts = Array.from(document.querySelectorAll(".project-hero__year, .project-hero__meta-item"));
-	const heroTextsStart = 360 + letterCount * LETTER_STAGGER;
+	const heroTextsStart = 360 * MOTION + letterCount * LETTER_STAGGER;
 	heroTexts.forEach((el, i) => {
-		el.style.transitionDelay = `${heroTextsStart + i * 96}ms`;
+		el.style.transitionDelay = `${heroTextsStart + i * 96 * MOTION}ms`;
 	});
 
 	/* Cover e immagini della galleria */
@@ -854,14 +858,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* Apertura progetto (come iamrossmason.com):
-   1. in home l'immagine cliccata vola (1.2s, expo.inOut) in un riquadro 16:9 in alto
-      (a schermo pieno su mobile) mentre il resto della pagina sfuma in 0.42s
+   1. in home l'immagine cliccata vola (1.2s × MOTION, expo.inOut) in un riquadro 16:9 in alto
+      (a schermo pieno su mobile) mentre il resto della pagina sfuma in 0.42s × MOTION
    2. la pagina progetto riparte con l'immagine nello stesso punto
       (disegnata dal CSS già al primo paint, vedi has-flight nell'head)
       e la fa volare fino alla cover, dove si dissolve nella cover vera */
 const FLIGHT_KEY = "pageFlight";
 const FLIGHT_EASE = "cubic-bezier(0.87, 0, 0.13, 1)"; // expo.inOut
-const FLIGHT_DURATION = 1200;
+const FLIGHT_DURATION = 1200 * MOTION;
 
 const createFlight = (src, rect) => {
 	const flight = document.createElement("div");
@@ -931,7 +935,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				fill: "forwards",
 			}),
 			shell.animate([{ opacity: 1 }, { opacity: 0 }], {
-				duration: 420,
+				duration: 420 * MOTION,
 				easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
 				fill: "forwards",
 			}),
