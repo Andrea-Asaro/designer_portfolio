@@ -9,7 +9,7 @@
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     /* Moltiplicatore di tutte le durate (CSS e main.js), tranne l'apertura
        della home: alzalo per rallentare, abbassalo per accelerare */
-    --motion: 1.25;
+    --motion: 1.5625;
     --tile-scale: 0.9;
   }
   

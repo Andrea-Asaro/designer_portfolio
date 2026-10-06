@@ -633,10 +633,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* Projects deck:
-   all'arrivo le immagini sono già in volo da un mazzo al centro della viewport
-   verso la propria cella della griglia (il mazzo chiuso non si vede mai);
+   all'arrivo si vede il mazzo chiuso al centro della viewport, poi le carte
+   partono una alla volta dalla cima verso la propria cella della griglia;
    solo alla fine compaiono anni e titoli.
-   Curva e durata del volo sono quelle dell'intro della home. */
+   Curva del volo come l'intro della home; tempi in DEAL e DEAL_END. */
 document.addEventListener("DOMContentLoaded", () => {
 	const root = document.documentElement;
 	if (!root.classList.contains("has-deck")) return;
@@ -649,10 +649,13 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-	const FADE_IN = 480 * MOTION; // le carte compaiono mentre sono già in movimento
-	const HEAD_START = 24 * MOTION; // al primo frame la distribuzione è quasi all'inizio
-	const STAGGER = 84 * MOTION; // ogni carta atterra un po' dopo la precedente
-	const DEAL = 1740 * MOTION; // volo della prima carta (come il FLIP della home)
+	/* Tempi fissi della distribuzione (non scalano con MOTION) */
+	const FADE_IN = 300; // il mazzo compare fermo al centro
+	const HOLD = 360; // il mazzo resta chiuso un istante prima della prima carta
+	const DEAL = 1500; // volo di ogni carta
+	const DEAL_END = 2500; // l'ultima carta arriva al suo posto
+	/* Ogni carta parte dopo la precedente, così l'ultima atterra a DEAL_END */
+	const STAGGER = cards.length > 1 ? (DEAL_END - HOLD - DEAL) / (cards.length - 1) : 0;
 	const TEXT_IN = 1080 * MOTION; // comparsa di anni e titoli
 	const MAX_WAIT = 600; // attesa massima delle immagini prima di partire
 
@@ -680,21 +683,20 @@ document.addEventListener("DOMContentLoaded", () => {
 			card.classList.add("is-dealing");
 			card.style.zIndex = String(cards.length - i);
 
-			/* Partono tutte insieme e nessuna resta ferma nel mazzo:
-			   la distribuzione nasce dalla durata, che cresce di carta in carta */
+			/* Le carte aspettano nel mazzo (fill backwards) e partono una alla volta */
 			card.animate(
 				[
 					{ transform: `translate3d(${dx}px, ${dy}px, 0) rotate(${tilt}deg) scale(0.9)` },
 					{ transform: "translate3d(0, 0, 0) rotate(0deg) scale(1)" },
 				],
-				{ duration: DEAL + i * STAGGER, delay: -HEAD_START, easing: EASE, fill: "backwards" }
+				{ duration: DEAL, delay: HOLD + i * STAGGER, easing: EASE, fill: "backwards" }
 			);
 
 			card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN, easing: EASE, fill: "backwards" });
 		});
 
 		/* Anni e titoli restano nascosti finché l'ultima carta non ha quasi finito */
-		const dealEnd = DEAL + (cards.length - 1) * STAGGER - HEAD_START;
+		const dealEnd = HOLD + (cards.length - 1) * STAGGER + DEAL;
 		const textDelay = dealEnd - DEAL * 0.4;
 		texts.forEach((text, i) => {
 			text.animate(
