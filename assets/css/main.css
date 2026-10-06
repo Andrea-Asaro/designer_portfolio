@@ -1056,8 +1056,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
    con lo stesso inset dell'header a sinistra e a destra. */
 .about-intro {
   --about-title: clamp(2.25rem, 4.6vw, 3.75rem);
-  --about-title-lh: 1.055;
-  --about-body: clamp(0.9375rem, calc(var(--about-title) * 0.27), 1.0625rem);
+  /* Interlinea un filo più ariosa dei titoli dei progetti (1.055) */
+  --about-title-lh: 1.12;
+  /* Testi = titoli delle card in home (1.02rem), etichette [..] = sottotitoli (0.9rem) */
+  --about-body: 1.02rem;
+  --about-body-lh: 1.35;
 }
 
 .about-intro__grid {
@@ -1118,13 +1121,14 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-intro__body {
   display: flex;
   flex-direction: column;
-  gap: 0.9em;
-  max-width: 32em;
+  /* Una riga vuota tra i paragrafi, come nel mockup */
+  gap: calc(var(--about-body-lh) * 1em);
+  max-width: 34em;
   margin-top: clamp(28px, 3.4vw, 48px);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--about-body);
-  font-weight: 500;
-  line-height: 1.35;
+  font-weight: 400;
+  line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
   color: #0b0b0b;
 }
@@ -1136,8 +1140,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 /* Skills: titolo a metà della scala del titolo grande, voci più compatte
    con la linea divisoria a metà tra un testo e l'altro */
 .about-skills {
-  --about-skills-gap: 14px;
-  max-width: calc(var(--about-body) * 32);
+  /* Spazio visibile sopra e sotto ogni linea divisoria */
+  --about-skills-gap: 11px;
+  --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * 0.9rem);
+  --about-skills-pad-bottom: calc(var(--about-skills-gap) - 0.42 * var(--about-body));
+  max-width: calc(var(--about-body) * 34);
   margin-top: clamp(44px, 6vw, 72px);
   padding-top: clamp(22px, 3vw, 30px);
   border-top: 1px solid rgba(11, 11, 11, 0.1);
@@ -1156,17 +1163,22 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-skills__intro {
   margin: 12px 0 0;
   font-size: var(--about-body);
-  font-weight: 500;
-  line-height: 1.35;
+  font-weight: 400;
+  line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
 }
 
 .about-skills__list {
-  margin-top: var(--about-skills-gap);
+  margin-top: var(--about-skills-pad-bottom);
 }
 
+/* La linea sta a metà tra il testo sopra e l'etichetta sotto, misurando
+   l'inchiostro visibile (baseline del testo → cap-height dell'etichetta).
+   Il testo sotto la baseline ha ~0.42em di riga vuota, l'etichetta sopra
+   il cap-height ~0.27em: i due padding compensano questa differenza. */
 .about-skills__item {
-  padding-block: var(--about-skills-gap);
+  padding-top: var(--about-skills-pad-top);
+  padding-bottom: var(--about-skills-pad-bottom);
   border-top: 1px solid rgba(11, 11, 11, 0.1);
 }
 
@@ -1185,10 +1197,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 .about-skills__text {
-  margin: 6px 0 0;
+  /* Etichetta e testo più vicini tra loro che alla linea divisoria */
+  margin: 0;
   font-size: var(--about-body);
-  font-weight: 500;
-  line-height: 1.35;
+  font-weight: 400;
+  line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
 }
 
@@ -1198,7 +1211,38 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   }
 }
 
+/* Desktop (layout del PDF): foto a sinistra, a filo con "Exhibition" dell'header,
+   alta quanto le 6 righe del titolo; sotto i 1024px resta la foto a tutta larghezza */
 @media (min-width: 1024px) {
+  .about-intro__grid {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .about-intro__media {
+    align-self: start;
+    position: sticky;
+    top: clamp(24px, 4vh, 40px);
+  }
+
+  .about-intro__frame {
+    width: fit-content;
+  }
+
+  /* Geist: a interlinea 1.12 la baseline sta a 0.90em dal top della riga
+     (misurata nel browser), cap-height 0.71em.
+     La foto va dal cap di "MY" alla baseline di "NARRATIVE.":
+     top = 0.90 - 0.71 = 0.19em, altezza = 5 righe + cap-height.
+     Se cambia --about-title-lh, va rimisurato lo 0.19. */
+  .about-intro__media {
+    margin-top: calc(var(--about-title) * 0.19);
+  }
+
+  .about-intro__portrait {
+    height: calc(var(--about-title) * (var(--about-title-lh) * 5 + 0.71));
+    width: auto;
+    max-height: none;
+  }
+
   .about-intro__br {
     display: inline;
   }
