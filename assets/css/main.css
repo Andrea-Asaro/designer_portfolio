@@ -11,14 +11,9 @@
        della home: alzalo per rallentare, abbassalo per accelerare */
     --motion: 1.5625;
     --tile-scale: 0.9;
-    /* Body copy: 21px desktop; su telefono allineato a Menu (1.1rem) */
-    --body-size: 21px;
-  }
-
-  @media (max-width: 860px) {
-    :root {
-      --body-size: 1.1rem;
-    }
+    /* Body copy: stessa size di Menu (1.1rem), desktop e mobile */
+    --body-size: 1.1rem;
+    --body-lh: 1.1;
   }
   
   *,
@@ -71,7 +66,7 @@
   .contact-copy {
     --contact-title: clamp(2.25rem, 4.6vw, 3.75rem);
     --contact-title-lh: 1.12;
-    --contact-body-lh: calc(var(--body-size) * 1.25);
+    --contact-body-lh: calc(var(--body-size) * var(--body-lh));
     padding-top: calc(
       (var(--contact-title) * var(--contact-title-lh) - var(--contact-body-lh)) / 2
     );
@@ -96,7 +91,7 @@
 .contact-item__label {
   margin: 0;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 17px;
+  font-size: var(--body-size);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.01em;
@@ -117,6 +112,7 @@
 
 .contact-copy__intro {
   font-size: var(--body-size);
+  line-height: var(--body-lh);
 }
 
 .contact-item__value a {
@@ -1098,14 +1094,14 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   vertical-align: baseline;
 }
 
-/* Descrizione: --body-size / 500 / 1.25; label [PROJECT INFO]: 17px. */
+/* Descrizione e label [PROJECT INFO]: stessa size (--body-size). */
 .project-intro__label {
   margin: 0;
   padding-top: 0.25em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 17px;
+  font-size: var(--body-size);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: var(--body-lh);
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: rgba(11, 11, 11, 0.48);
@@ -1119,11 +1115,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   display: flex;
   flex-direction: column;
   /* Una riga vuota tra i paragrafi, come nella pagina About */
-  gap: 1.25em;
+  gap: calc(var(--body-lh) * 1em);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--body-size);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: var(--body-lh);
   letter-spacing: -0.01em;
   color: #0b0b0b;
 }
@@ -1196,9 +1192,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   --about-title: clamp(2.25rem, 4.6vw, 3.75rem);
   /* Interlinea un filo più ariosa dei titoli dei progetti (1.055) */
   --about-title-lh: 1.12;
-  /* Body About: --body-size / 500 / 1.25; etichette [..]: 17px */
+  /* Body About e etichette [..]: stessa size (--body-size) */
   --about-body: var(--body-size);
-  --about-body-lh: 1.25;
+  --about-body-lh: var(--body-lh);
 }
 
 .about-intro__grid {
@@ -1280,7 +1276,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-skills {
   /* Spazio visibile sopra e sotto ogni linea (doppio rispetto a prima) */
   --about-skills-gap: 22px;
-  --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * 17px);
+  --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * var(--body-size));
   --about-skills-pad-bottom: calc(var(--about-skills-gap) - 0.42 * var(--about-body));
   max-width: calc(var(--about-body) * 34);
   margin-top: clamp(44px, 6vw, 72px);
@@ -1326,7 +1322,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 
 .about-skills__label {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--body-size);
   font-weight: 500;
   line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
