@@ -252,13 +252,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	const header = document.querySelector(".site-shell > header");
 	const wordmark = document.querySelector(".site-wordmark");
 	const wordmarkSans = document.querySelector(".site-wordmark__sans");
-	const footer = wordmark?.closest("footer");
 
 	const LERP = 0.1;
 	const SNAP_DELAY = 100;
 	const RATIO = 1.25; // tile 4:5
 	const ACTIVE_SCALE = 2;
-	const COLUMNS = 6;
+	const ACTIVE_H = 0.686; // altezza dell'attiva rispetto alla finestra
+	const ACTIVE_CENTER = 0.6; // centro dell'attiva rispetto alla finestra
+	const MIN_COLUMNS = 4; // tile al massimo 1/4 della larghezza
+	const MAX_COLUMNS = 9; // tile almeno 1/9 della larghezza
 	const DRAG_TAP = 10; // sotto questa soglia il trascinamento è un tap
 
 	const originals = Array.from(scroller.querySelectorAll(".work-card"));
@@ -313,12 +315,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		return node === ancestor ? top : top - (ancestor?.offsetTop || 0);
 	};
 
-	/* Sonda a larghezza zero dentro "DADDARIO": il suo bordo inferiore è la linea di base */
-	const probe = document.createElement("span");
-	probe.setAttribute("aria-hidden", "true");
-	probe.style.cssText = "display:inline-block;width:0;height:0;overflow:hidden;vertical-align:baseline;";
-	wordmarkSans?.appendChild(probe);
-
 	const measure = () => {
 		ww = scroller.clientWidth || window.innerWidth;
 
@@ -327,25 +323,21 @@ document.addEventListener("DOMContentLoaded", () => {
 		const metaH = meta ? meta.offsetHeight : 0;
 		let stageTop;
 
-		if (footer) footer.style.paddingBottom = "";
-
 		if (!isMobile() && wordmarkSans) {
-			/* Fondo dell'attiva = base della scritta, più il piccolo overshoot delle lettere tonde */
-			const fontSize = parseFloat(getComputedStyle(wordmark).fontSize) || 0;
-			const bottom = offsetTopIn(probe, content) + fontSize * 0.02;
+			/* L'attiva è dimensionata e centrata sull'altezza della finestra, così resta
+			   sempre più o meno a metà pagina (riferimento: 1440×875 → tile 480×600 con
+			   il centro al 60%). Se sconfina sulla scritta va bene. */
+			const vh = window.innerHeight;
+			const mainTop = content ? content.offsetTop : 0;
 			const minTop = headerBottom + metaH + 16;
-			slideW = Math.max(60, Math.min(ww / COLUMNS, (bottom - minTop) / (RATIO * ACTIVE_SCALE)));
-			stageTop = bottom - slideW * RATIO * ACTIVE_SCALE;
+			const activeH = Math.min(vh * ACTIVE_H, vh - 16 - mainTop - minTop);
+			slideW = clamp(activeH / (RATIO * ACTIVE_SCALE), ww / MAX_COLUMNS, ww / MIN_COLUMNS);
+			const h = slideW * RATIO * ACTIVE_SCALE;
+			stageTop = Math.max(minTop, vh * ACTIVE_CENTER - mainTop - h / 2);
 
-			/* Schermi alti (tablet in verticale): invece di far scendere le tile a metà pagina
-			   si alza la scritta fino al fondo dell'attiva */
-			const maxTop = Math.max(ww * 0.197, window.innerHeight * 0.4);
-			if (footer && stageTop > maxTop) {
-				const lift = stageTop - maxTop;
-				const basePadding = parseFloat(getComputedStyle(footer).paddingBottom) || 0;
-				footer.style.paddingBottom = `${basePadding + lift}px`;
-				stageTop = maxTop;
-			}
+			/* Schermi molto stretti e alti: almeno l'attiva arriva a toccare la scritta */
+			const wordmarkTop = offsetTopIn(wordmark, content);
+			if (stageTop + h < wordmarkTop) stageTop = wordmarkTop - h;
 		} else {
 			/* Mobile: margini laterali come nel reference (60px su 390px) */
 			const side = clamp(ww * (60 / 390), 24, 96);
