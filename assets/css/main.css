@@ -910,20 +910,31 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 
 .project-intro {
   --project-intro-title: clamp(2.25rem, 4.6vw, 3.75rem);
+  --project-intro-title-lh: 1.055;
+  --project-intro-index-scale: 0.386;
   /* Rapporto 2∶1 (cover→titolo : titolo→testo); scala generosa sul titolo */
   --project-intro-gap-cover: calc(var(--project-intro-title) * 1.38);
   --project-intro-gap-text: calc(var(--project-intro-gap-cover) * 0.5);
   /* Dal top della line-box ai cap-height della prima riga (misurato: le
      parole italic non alzano più la riga, quindi vale per tutti i titoli) */
   --project-intro-cap-offset: calc(var(--project-intro-title) * 0.157);
-  /* Screenshot: colonna titolo ≈ metà della cover, centrata sotto */
-  --project-intro-col: 50%;
+  /* Titolo largo; descrizione con misura fissa stretta (non % che
+     collassava accanto a [PROJECT INFO] né nowrap che sfondeva a ~600px). */
+  --project-intro-title-col: 62%;
+  --project-intro-inset: 28%;
+  /* rem (non em): em ereditava il font-size enorme del titolo nel main */
+  --project-intro-body-max: 565px;
   position: relative;
   width: 100%;
   max-width: 1560px;
   /* Gap visuale cover → cap-height titolo */
   margin-top: calc(var(--project-intro-gap-cover) - var(--project-intro-cap-offset));
   margin-inline: auto;
+}
+
+/* Progetto 09 / A'MARE: descrizione leggermente più stretta */
+.project-intro--09 {
+  --project-intro-body-max: 480px;
 }
 
 .project-intro__grid {
@@ -934,25 +945,29 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .project-intro__index {
   position: absolute;
   left: 0;
-  top: 0;
+  /* Centro verticale del numero = centro della prima riga del titolo */
+  top: calc(
+    (
+        var(--project-intro-title) * var(--project-intro-title-lh)
+        - var(--project-intro-title) * var(--project-intro-index-scale)
+      )
+      / 2
+  );
   margin: 0;
-  /* Allinea i cap-height di 01/ a quelli del titolo: dentro la sua riga
-     (line-height 1) il cap di 01/ parte già 0.043 del titolo più in basso */
-  padding-top: calc(var(--project-intro-cap-offset) - var(--project-intro-title) * 0.043);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: calc(var(--project-intro-title) * 0.386);
+  font-size: calc(var(--project-intro-title) * var(--project-intro-index-scale));
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1;
   color: #0b0b0b;
 }
 
-/* Una sola colonna centrata: titolo e info condividono il bordo sinistro.
+/* Titolo e info condividono l'inset; la descrizione ha max-width propria.
    font-family Geist qui così ch / colonne usano la metrica del titolo. */
 .project-intro__main {
-  display: grid;
-  grid-template-columns: minmax(0, var(--project-intro-col));
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--project-intro-gap-text);
   width: 100%;
   min-width: 0;
@@ -962,20 +977,24 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 
 .project-intro__info {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
-  column-gap: clamp(14px, 2vw, 28px);
+  grid-template-columns: auto minmax(0, var(--project-intro-body-max));
+  column-gap: clamp(18px, 2.2vw, 28px);
   align-items: start;
-  width: 100%;
+  width: fit-content;
+  max-width: calc(100% - var(--project-intro-inset));
+  margin-left: var(--project-intro-inset);
   min-width: 0;
 }
 
 .project-intro__title {
   margin: 0;
-  width: 100%;
+  margin-left: var(--project-intro-inset);
+  width: var(--project-intro-title-col);
+  max-width: calc(100% - var(--project-intro-inset));
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 1em;
   font-weight: 600;
-  line-height: 1.055;
+  line-height: var(--project-intro-title-lh);
   letter-spacing: -0.035em;
   text-transform: uppercase;
   color: #0b0b0b;
@@ -994,17 +1013,14 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   vertical-align: baseline;
 }
 
-/* Everything in the intro is sized in em off --project-intro-title, which
-   bottoms out at 2.25rem below ~815px. Left alone that dropped the body copy
-   to 9.7px and this label to 8.3px on every phone and tablet, so both get a
-   floor and a ceiling; between them the original em ratio still governs. */
+/* Descrizione: 21px / 500 / 1.25; label [PROJECT INFO]: 17px. */
 .project-intro__label {
   margin: 0;
   padding-top: 0.25em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 0.9rem;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: rgba(11, 11, 11, 0.48);
@@ -1013,15 +1029,16 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 
 .project-intro__body {
   min-width: 0;
+  width: var(--project-intro-body-max);
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   /* Una riga vuota tra i paragrafi, come nella pagina About */
-  gap: 1.35em;
+  gap: 1.25em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  /* Stessa dimensione dei testi di About e dei titoli delle card in home */
-  font-size: 1.02rem;
-  font-weight: 400;
-  line-height: 1.35;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   color: #0b0b0b;
 }
@@ -1037,20 +1054,18 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   text-decoration-thickness: 1px;
 }
 
-/* A capo del mockup (solo desktop): titolo e testo con --lines vanno a capo
-   solo sui <br>. Le righe possono sporgere a destra della colonna, come il
-   titolo nel mockup; sotto i 1024px il testo torna a capo da solo */
+/* A capo del mockup (solo desktop): i <br> restano sul titolo; il body
+   va a capo da solo dentro --project-intro-body-max. */
 .project-intro__br {
   display: none;
 }
 
 @media (min-width: 1024px) {
-  .project-intro__br {
+  .project-intro__title .project-intro__br {
     display: inline;
   }
 
-  .project-intro__title--lines,
-  .project-intro__body--lines p {
+  .project-intro__title--lines {
     white-space: nowrap;
   }
 }
@@ -1066,18 +1081,21 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 @media (max-width: 860px) {
+  .project-intro {
+    --project-intro-inset: 0%;
+    --project-intro-title-col: 100%;
+    --project-intro-body-max: 100%;
+  }
+
   .project-intro__index {
     position: static;
     margin-bottom: 12px;
   }
 
-  .project-intro__main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .project-intro__info {
     grid-template-columns: 1fr;
     row-gap: 10px;
+    width: 100%;
   }
 
   .project-intro__label {
@@ -1093,9 +1111,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   --about-title: clamp(2.25rem, 4.6vw, 3.75rem);
   /* Interlinea un filo più ariosa dei titoli dei progetti (1.055) */
   --about-title-lh: 1.12;
-  /* Testi = titoli delle card in home (1.02rem), etichette [..] = sottotitoli (0.9rem) */
-  --about-body: 1.02rem;
-  --about-body-lh: 1.35;
+  /* Body About: 21px / 500 / 1.25; etichette [..]: 17px */
+  --about-body: 21px;
+  --about-body-lh: 1.25;
 }
 
 .about-intro__grid {
@@ -1162,7 +1180,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   margin-top: clamp(28px, 3.4vw, 48px);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--about-body);
-  font-weight: 400;
+  font-weight: 500;
   line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
   color: #0b0b0b;
@@ -1175,9 +1193,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 /* Skills: titolo a metà della scala del titolo grande, voci più compatte
    con la linea divisoria a metà tra un testo e l'altro */
 .about-skills {
-  /* Spazio visibile sopra e sotto ogni linea divisoria */
-  --about-skills-gap: 11px;
-  --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * 0.9rem);
+  /* Spazio visibile sopra e sotto ogni linea (doppio rispetto a prima) */
+  --about-skills-gap: 22px;
+  --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * 17px);
   --about-skills-pad-bottom: calc(var(--about-skills-gap) - 0.42 * var(--about-body));
   max-width: calc(var(--about-body) * 34);
   margin-top: clamp(44px, 6vw, 72px);
@@ -1198,7 +1216,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .about-skills__intro {
   margin: 12px 0 0;
   font-size: var(--about-body);
-  font-weight: 400;
+  font-weight: 500;
   line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
 }
@@ -1223,9 +1241,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 
 .about-skills__label {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: rgba(11, 11, 11, 0.48);
@@ -1235,7 +1253,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   /* Etichetta e testo più vicini tra loro che alla linea divisoria */
   margin: 0;
   font-size: var(--about-body);
-  font-weight: 400;
+  font-weight: 500;
   line-height: var(--about-body-lh);
   letter-spacing: -0.01em;
 }
