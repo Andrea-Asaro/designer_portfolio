@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
      ogni tile "si avvolge" quando esce da un lato e rientra dall'altro
    - l'input (rotella, trascinamento, frecce) muove il target t,
      la posizione reale tc lo insegue con un lerp (inerzia) e poi fa snap su una tile
-   - desktop: 7 colonne; la tile al centro è attiva (scale 2 dall'alto),
+   - desktop: 6 colonne; la tile al centro è attiva (scale 2 dall'alto),
      quelle a sinistra/destra si scostano di mezza tile.
      --diff attenua l'effetto mentre si scorre veloce, come nel reference
    - l'attiva termina sulla base della scritta DADDARIO rosanna (copre tutta l'altezza del nome)
@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const SNAP_DELAY = 100;
 	const RATIO = 1.25; // tile 4:5
 	const ACTIVE_SCALE = 2;
-	const COLUMNS = 7;
+	const COLUMNS = 6;
 	const DRAG_TAP = 10; // sotto questa soglia il trascinamento è un tap
 
 	const originals = Array.from(scroller.querySelectorAll(".work-card"));
@@ -649,6 +649,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+	/* Volo delle carte: partenza e arrivo morbidi (niente strappo iniziale) */
+	const DEAL_EASE = "cubic-bezier(0.45, 0, 0.15, 1)";
 	/* Tempi fissi della distribuzione (non scalano con MOTION) */
 	const FADE_IN = 300; // il mazzo compare fermo al centro
 	const HOLD = 360; // il mazzo resta chiuso un istante prima della prima carta
@@ -668,6 +670,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	const decoded = Promise.all(images.map((img) => (img.decode ? img.decode().catch(() => {}) : null)));
 	const timeout = new Promise((resolve) => window.setTimeout(resolve, MAX_WAIT));
 
+	/* Livelli GPU creati prima della partenza: niente scatto al primo frame */
+	const prepare = () => {
+		cards.forEach((card, i) => {
+			card.classList.add("is-dealing");
+			card.style.zIndex = String(cards.length - i);
+		});
+	};
+
 	const deal = () => {
 		/* Mazzo centrato nella viewport visibile */
 		const deckX = window.innerWidth / 2;
@@ -679,20 +689,22 @@ document.addEventListener("DOMContentLoaded", () => {
 			const dy = deckY - (rect.top + rect.height / 2) - i; // spessore del mazzo
 			const tilt = (i % 2 ? 1 : -1) * (0.6 + ((i * 7) % 4) * 0.35);
 
-			/* La prima carta distribuita è quella in cima al mazzo */
-			card.classList.add("is-dealing");
-			card.style.zIndex = String(cards.length - i);
-
 			/* Le carte aspettano nel mazzo (fill backwards) e partono una alla volta */
 			card.animate(
 				[
 					{ transform: `translate3d(${dx}px, ${dy}px, 0) rotate(${tilt}deg) scale(0.9)` },
 					{ transform: "translate3d(0, 0, 0) rotate(0deg) scale(1)" },
 				],
-				{ duration: DEAL, delay: HOLD + i * STAGGER, easing: EASE, fill: "backwards" }
+				{ duration: DEAL, delay: HOLD + i * STAGGER, easing: DEAL_EASE, fill: "backwards" }
 			);
 
 			card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN, easing: EASE, fill: "backwards" });
+
+			/* Ogni carta lascia il mazzo (ombra e livello) appena atterra, non tutte insieme */
+			window.setTimeout(() => {
+				card.classList.remove("is-dealing");
+				card.style.zIndex = "";
+			}, HOLD + i * STAGGER + DEAL);
 		});
 
 		/* Anni e titoli restano nascosti finché l'ultima carta non ha quasi finito */
@@ -709,18 +721,15 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 
 		root.classList.remove("has-deck");
-
-		/* Timer invece di animation.finished: le promise non si risolvono
-		   se la scheda è in background o non renderizza frame */
-		window.setTimeout(() => {
-			cards.forEach((card) => {
-				card.classList.remove("is-dealing");
-				card.style.zIndex = "";
-			});
-		}, dealEnd);
 	};
 
-	Promise.race([decoded, timeout]).then(() => window.requestAnimationFrame(deal));
+	/* Timer invece di animation.finished: le promise non si risolvono
+	   se la scheda è in background o non renderizza frame.
+	   Due frame tra prepare e deal: il browser crea i livelli prima del volo */
+	Promise.race([decoded, timeout]).then(() => {
+		prepare();
+		window.requestAnimationFrame(() => window.requestAnimationFrame(deal));
+	});
 });
 
 /* Text reveal:

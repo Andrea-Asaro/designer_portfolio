@@ -59,7 +59,7 @@
 
 
 /* Carousel (come iamrossmason.com):
-   - desktop: 7 colonne a tutta larghezza, tile 4:5, loop infinito con inerzia;
+   - desktop: 6 colonne a tutta larghezza, tile 4:5, loop infinito con inerzia;
      l'attiva scala 2× dall'alto, le vicine si scostano di mezza tile
    - mobile: tile uguali, trascinamento con inerzia e snap
    Posizione, larghezza tile e altezza dello stage le calcola main.js
@@ -71,7 +71,7 @@
 }
 
 .work-scroller {
-  --slide-w: calc(100vw / 7);
+  --slide-w: calc(100vw / 6);
   --stage-top: 0px;
   --diff: 1;
   --slide-ease: cubic-bezier(0.19, 1, 0.22, 1);
