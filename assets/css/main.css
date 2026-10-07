@@ -11,6 +11,14 @@
        della home: alzalo per rallentare, abbassalo per accelerare */
     --motion: 1.5625;
     --tile-scale: 0.9;
+    /* Body copy: 21px desktop; su telefono allineato a Menu (1.1rem) */
+    --body-size: 21px;
+  }
+
+  @media (max-width: 860px) {
+    :root {
+      --body-size: 1.1rem;
+    }
   }
   
   *,
@@ -63,7 +71,7 @@
   .contact-copy {
     --contact-title: clamp(2.25rem, 4.6vw, 3.75rem);
     --contact-title-lh: 1.12;
-    --contact-body-lh: calc(21px * 1.25);
+    --contact-body-lh: calc(var(--body-size) * 1.25);
     padding-top: calc(
       (var(--contact-title) * var(--contact-title-lh) - var(--contact-body-lh)) / 2
     );
@@ -100,11 +108,15 @@
 .contact-item__value {
   margin: 0;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 21px;
+  font-size: var(--body-size);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.01em;
   color: #0b0b0b;
+}
+
+.contact-copy__intro {
+  font-size: var(--body-size);
 }
 
 .contact-item__value a {
@@ -1086,7 +1098,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   vertical-align: baseline;
 }
 
-/* Descrizione: 21px / 500 / 1.25; label [PROJECT INFO]: 17px. */
+/* Descrizione: --body-size / 500 / 1.25; label [PROJECT INFO]: 17px. */
 .project-intro__label {
   margin: 0;
   padding-top: 0.25em;
@@ -1109,7 +1121,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   /* Una riga vuota tra i paragrafi, come nella pagina About */
   gap: 1.25em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 21px;
+  font-size: var(--body-size);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.01em;
@@ -1184,8 +1196,8 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   --about-title: clamp(2.25rem, 4.6vw, 3.75rem);
   /* Interlinea un filo più ariosa dei titoli dei progetti (1.055) */
   --about-title-lh: 1.12;
-  /* Body About: 21px / 500 / 1.25; etichette [..]: 17px */
-  --about-body: 21px;
+  /* Body About: --body-size / 500 / 1.25; etichette [..]: 17px */
+  --about-body: var(--body-size);
   --about-body-lh: 1.25;
 }
 
