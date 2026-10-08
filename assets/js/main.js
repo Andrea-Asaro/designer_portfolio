@@ -644,14 +644,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	/* Volo delle carte: partenza e arrivo morbidi (niente strappo iniziale) */
 	const DEAL_EASE = "cubic-bezier(0.45, 0, 0.15, 1)";
 	/* Tempi fissi della distribuzione (non scalano con MOTION) */
-	const FADE_IN = 300; // il mazzo compare fermo al centro
-	const HOLD = 360; // il mazzo resta chiuso un istante prima della prima carta
+	const FADE_IN = 300; // le carte compaiono mentre lasciano il mazzo
+	const HOLD = 0; // la prima carta parte subito, senza pausa a mazzo chiuso
 	const DEAL = 1500; // volo di ogni carta
 	const DEAL_END = 2500; // l'ultima carta arriva al suo posto
 	/* Ogni carta parte dopo la precedente, così l'ultima atterra a DEAL_END */
 	const STAGGER = cards.length > 1 ? (DEAL_END - HOLD - DEAL) / (cards.length - 1) : 0;
 	const TEXT_IN = 1080 * MOTION; // comparsa di anni e titoli
-	const MAX_WAIT = 600; // attesa massima delle immagini prima di partire
+	const MAX_WAIT = 250; // attesa massima delle immagini (precaricate durante la sfumatura)
 
 	/* Tutte le immagini vanno caricate e decodificate prima del volo,
 	   altrimenti la decodifica a metà animazione crea scatti */
@@ -738,11 +738,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-	const TEXT_IN = 1080 * MOTION;
-	const STAGGER = 48 * MOTION;
-	/* Arrivando dal velo di "Contact me" la pagina è già coperta d'azzurro da
-	   ~2s: le scritte partono subito, senza la pausa del page-in */
-	const START = root.classList.contains("is-contact-arrived") ? 0 : 216 * MOTION; // come il page-in della home
+	/* Arrivando dal velo di "Contact me" la pagina è già coperta d'azzurro:
+	   le scritte partono subito e più rapide, senza la pausa del page-in */
+	const fromWipe = root.classList.contains("is-contact-arrived");
+	const TEXT_IN = fromWipe ? 700 : 1080 * MOTION;
+	const STAGGER = fromWipe ? 40 : 48 * MOTION;
+	const START = fromWipe ? 0 : 216 * MOTION; // come il page-in della home
 
 	items.forEach((item, i) => {
 		item.animate(
@@ -1046,12 +1047,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* Contact me (come iamrossmason.com):
    un velo azzurro scende dall'alto con il bordo in diagonale (angolo destro in
-   1s, sinistro in 1.25s, × MOTION) e copre la pagina; poi si apre la pagina
+   1s, sinistro in 1.25s, gli stessi tempi del riferimento: qui niente MOTION,
+   rallentato sembrava lento) e copre la pagina; poi si apre la pagina
    contatti, già azzurra. Uscendo dai contatti il velo risale al contrario
    (destro in 1s, sinistro in 1.25s) e scopre il bianco della pagina successiva. */
 const CONTACT_WIPE_KEY = "contactWipe";
-const CONTACT_WIPE_FAST = 1000 * MOTION;
-const CONTACT_WIPE_SLOW = 1250 * MOTION;
+const CONTACT_WIPE_FAST = 1000;
+const CONTACT_WIPE_SLOW = 1250;
 
 /* Curva "snappy" del sito di riferimento (CustomEase GSAP): tre segmenti cubici
    da (0,0) a (1,1). Campionata una volta in una tabella x → y. */
@@ -1200,5 +1202,100 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.body.style.removeProperty("--wipe-left");
 		document.body.style.pointerEvents = "";
 		leaving = null;
+	});
+});
+
+/* Verso Projects: la pagina corrente sfuma via e intanto si precaricano
+   projects.html e le sue immagini, così all'arrivo le carte partono subito.
+   Dai contatti resta il velo azzurro che risale (vedi sopra). */
+const PROJECTS_FADE = 400;
+
+document.addEventListener("DOMContentLoaded", () => {
+	const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+	if (document.body.classList.contains("page-contact")) return;
+	if (/(^|\/)projects\.html$/.test(window.location.pathname)) return; // già su Projects
+
+	let leaving = null;
+
+	const preloadProjects = (href) => {
+		fetch(href)
+			.then((response) => response.text())
+			.then((html) => {
+				const doc = new DOMParser().parseFromString(html, "text/html");
+				doc.querySelectorAll(".project-tile__media img").forEach((img) => {
+					const src = img.getAttribute("src");
+					if (src) new Image().src = new URL(src, href).href;
+				});
+			})
+			.catch(() => {});
+	};
+
+	document.addEventListener("click", (event) => {
+		const link = event.target.closest("a[href]");
+		if (!link || event.defaultPrevented || leaving || !isPlainClick(event)) return;
+		if (link.target && link.target !== "_self") return;
+		if (link.origin !== window.location.origin || !/(^|\/)projects\.html$/.test(link.pathname)) return;
+		if (prefersReduced.matches || typeof Element.prototype.animate !== "function") return;
+
+		event.preventDefault();
+		preloadProjects(link.href);
+		document.body.style.pointerEvents = "none";
+		const fade = document.body.animate([{ opacity: 1 }, { opacity: 0 }], {
+			duration: PROJECTS_FADE,
+			easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+			fill: "forwards",
+		});
+		leaving = { fade };
+		window.setTimeout(() => {
+			window.location.href = link.href;
+		}, PROJECTS_FADE);
+	});
+
+	/* Tornando indietro (bfcache) la pagina deve ricomparire intatta */
+	window.addEventListener("pageshow", (event) => {
+		if (!event.persisted || !leaving) return;
+		leaving.fade.cancel();
+		document.body.style.pointerEvents = "";
+		leaving = null;
+	});
+});
+
+/* Pagine progetto, da desktop: la descrizione finisce sempre un po' prima del
+   titolo. La larghezza fissa (--project-intro-body-max) va bene per i titoli
+   lunghi, ma con quelli corti (o su schermi stretti, dove il titolo scala con
+   la viewport) il testo arrivava a filo o oltre: qui si stringe quanto basta
+   perché il bordo destro resti BODY_INSET px prima della riga più lunga del
+   titolo. Non si allarga mai oltre il valore del CSS. */
+document.addEventListener("DOMContentLoaded", () => {
+	const intro = document.querySelector(".project-intro");
+	const title = intro?.querySelector(".project-intro__title");
+	const body = intro?.querySelector(".project-intro__body");
+	if (!intro || !title || !body) return;
+
+	const BODY_INSET = 40;
+	const desktop = window.matchMedia("(min-width: 1024px)");
+
+	const inkRight = (el) => {
+		const range = document.createRange();
+		range.selectNodeContents(el);
+		return Math.max(...Array.from(range.getClientRects(), (rect) => rect.right));
+	};
+
+	const fit = () => {
+		intro.style.removeProperty("--project-intro-body-max");
+		if (!desktop.matches) return;
+		const cssMax = body.getBoundingClientRect().width;
+		const available = inkRight(title) - BODY_INSET - body.getBoundingClientRect().left;
+		if (available < cssMax) {
+			intro.style.setProperty("--project-intro-body-max", `${Math.max(240, Math.floor(available))}px`);
+		}
+	};
+
+	fit();
+	document.fonts?.ready.then(fit);
+	let raf = 0;
+	window.addEventListener("resize", () => {
+		window.cancelAnimationFrame(raf);
+		raf = window.requestAnimationFrame(fit);
 	});
 });
