@@ -1687,15 +1687,29 @@ html.has-project-motion .project-media.is-landed > video {
   --wipe-right: 0%;
   --wipe-left: 0%;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Alto quanto lo schermo con la barra del browser chiusa (lvh): su mobile la
+     barra che si apre/chiude cambia l'altezza visibile e con inset:0 in fondo
+     restava una striscia bianca scoperta */
+  height: 100vh;
+  height: 100lvh;
   z-index: 9999;
   background: var(--contact-bg);
   clip-path: polygon(0 0, 100% 0, 100% var(--wipe-right), 0 var(--wipe-left));
   pointer-events: none;
 }
 
-/* Sotto il body azzurro, il bianco che si scopre quando il velo risale */
+/* Fuori dal body (sotto il fondo, rimbalzo dello scroll, barra del browser
+   che si chiude su mobile) il colore è lo stesso azzurro, niente strisce
+   bianche. Diventa bianco solo mentre il velo risale o si apre, per scoprire
+   il bianco della pagina dopo/prima. */
 html.is-contact {
+  background: var(--contact-bg);
+}
+
+html.is-contact.is-contact-wiping {
   background: var(--bg);
 }
 
