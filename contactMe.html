@@ -47,12 +47,27 @@
       }
     </script>
 
+    <!-- Velo azzurro: arrivando dal link "Contact me" la pagina precedente è già
+         coperta dal velo, quindi si parte aperti; da URL diretto si parte chiusi
+         e main.js apre il body con la stessa diagonale -->
+    <script>
+      document.documentElement.classList.add("is-contact");
+      try {
+        if (sessionStorage.getItem("contactWipe")) {
+          sessionStorage.removeItem("contactWipe");
+          document.documentElement.classList.add("is-contact-arrived");
+        } else if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("is-contact-wiping", "is-contact-closed");
+        }
+      } catch (_) {}
+    </script>
+
     <!-- CSS e JS condivisi -->
-    <link rel="stylesheet" href="assets/css/main.css?v=20261008c" />
-    <script defer src="assets/js/main.js?v=20261007l"></script>
+    <link rel="stylesheet" href="assets/css/main.css?v=20261008d" />
+    <script defer src="assets/js/main.js?v=20261008e"></script>
   </head>
 
-  <body class="min-h-[100svh] bg-white font-serif text-ink antialiased">
+  <body class="page-contact min-h-[100svh] font-serif text-ink antialiased">
     <!-- Skip link -->
     <a
       class="skip-link absolute left-[clamp(16px,4vw,48px)] top-[10px] z-10 border border-hairline bg-white px-3 py-2 -translate-y-[160%] transition-transform duration-200 ease-editorial focus:translate-y-0"

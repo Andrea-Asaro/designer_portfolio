@@ -1670,3 +1670,56 @@ html.has-project-motion .project-media.is-landed > video {
   transform: none;
   transition: none;
 }
+
+/* ------------------------------------------------------------------ */
+/* Contact me (come iamrossmason.com)                                 */
+/* La pagina contatti è azzurra; ci si arriva con un velo dello stesso */
+/* colore che scende dall'alto con il bordo in diagonale, e se ne esce */
+/* con lo stesso velo che risale. Il bordo è un clip-path a due        */
+/* angoli (--wipe-right / --wipe-left) animati da main.js con tempi    */
+/* diversi: è la differenza di tempo che inclina il bordo.             */
+/* ------------------------------------------------------------------ */
+:root {
+  --contact-bg: #70acc1;
+}
+
+.contact-wipe {
+  --wipe-right: 0%;
+  --wipe-left: 0%;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--contact-bg);
+  clip-path: polygon(0 0, 100% 0, 100% var(--wipe-right), 0 var(--wipe-left));
+  pointer-events: none;
+}
+
+/* Sotto il body azzurro, il bianco che si scopre quando il velo risale */
+html.is-contact {
+  background: var(--bg);
+}
+
+body.page-contact {
+  background: var(--contact-bg);
+}
+
+/* Durante il velo (entrata da URL diretto, uscita) il body stesso viene
+   ritagliato: niente will-change fisso, solo mentre l'animazione gira */
+html.is-contact-wiping body.page-contact {
+  --wipe-right: 100%;
+  --wipe-left: 100%;
+  clip-path: polygon(0 0, 100% 0, 100% var(--wipe-right), 0 var(--wipe-left));
+}
+
+/* Prima del primo paint, arrivando da URL diretto: body ancora chiuso */
+html.is-contact-closed body.page-contact {
+  --wipe-right: 0%;
+  --wipe-left: 0%;
+}
+
+/* Sull'azzurro i testi grigi diventano neri */
+body.page-contact .text-muted,
+body.page-contact .nav-link,
+body.page-contact .contact-item__label {
+  color: var(--text);
+}
