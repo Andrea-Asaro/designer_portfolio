@@ -37,6 +37,12 @@
     color: inherit;
     text-decoration: none;
   }
+
+  /* Barra in alto (Exhibition | Spatial Design, menu, Contact me): stessa
+     interlinea del body, al posto dell'1.5 di default di Tailwind */
+  header:has(nav[aria-label="Navigazione principale"]) {
+    line-height: var(--body-lh);
+  }
   
   /* Shared focus treatment for links and the keyboard-focusable scroller */
   a:focus-visible,
@@ -73,13 +79,14 @@
   }
 }
 
-/* Righe contatto: padding uguale + line-height 1 → testo al centro
-   esatto tra le due hairline (niente margini default su h3/p). */
+/* Righe contatto: padding uguale sopra e sotto → testo al centro tra le due
+   hairline (niente margini default su h3/p). Il padding segue il body:
+   era 22px con il body a 21px, ora scala con --body-size (≈18px a 17,6px). */
 .contact-item {
   display: grid;
   gap: 10px;
   margin: 0;
-  padding-block: 22px;
+  padding-block: calc(var(--body-size) * 1.05);
   border-top: 1px solid rgba(11, 11, 11, 0.1);
   align-items: center;
 }
@@ -93,7 +100,7 @@
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--body-size);
   font-weight: 500;
-  line-height: 1;
+  line-height: var(--body-lh);
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: rgba(11, 11, 11, 0.48);
@@ -105,7 +112,7 @@
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: var(--body-size);
   font-weight: 500;
-  line-height: 1;
+  line-height: var(--body-lh);
   letter-spacing: -0.01em;
   color: #0b0b0b;
 }
@@ -120,14 +127,12 @@
   text-decoration: none;
 }
 
-/* Stacca la linea sotto il testo (con lh:1 restava nascosta / attaccata) */
-.contact-item__value .uline-double {
-  padding-bottom: 4px;
-}
-
+/* La linea sotto il link sta fuori dalla riga (bottom negativo, niente
+   padding): così le righe con link sono alte come [Phone] e etichetta e
+   valore restano sulla stessa baseline. */
 .contact-item__value .uline-double::before,
 .contact-item__value .uline-double::after {
-  bottom: 0;
+  bottom: -3px;
 }
 
 @media (min-width: 768px) {
@@ -204,6 +209,33 @@
   padding-bottom: 8px;
   padding-right: 8px;
   text-align: left;
+  /* Stessa scala body/Menu del resto del sito */
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+  letter-spacing: -0.01em;
+}
+
+.work-meta__row {
+  display: flex;
+  align-items: baseline;
+  line-height: inherit;
+}
+
+.work-meta__index {
+  font-weight: 650;
+}
+
+.work-meta__title {
+  margin: 0;
+  font-size: 1em;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+  line-height: inherit;
+}
+
+.work-meta__tag {
+  font-weight: 500;
+  color: rgba(11, 11, 11, 0.48);
 }
 
 .work-media {
@@ -943,9 +975,9 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 .project-hero__meta-item {
   margin: 0;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 0.9rem;
+  font-size: var(--body-size);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: var(--body-lh);
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: rgba(11, 11, 11, 0.48);
@@ -1065,6 +1097,10 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   max-width: calc(100% - var(--project-intro-inset));
   margin-left: var(--project-intro-inset);
   min-width: 0;
+  /* Reset: .project-intro__main porta la size del titolo; label/body
+     devono partire dalla size Menu/descrizione, non ereditare ~36–60px. */
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
 }
 
 .project-intro__title {
@@ -1094,12 +1130,14 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   vertical-align: baseline;
 }
 
-/* Descrizione e label [PROJECT INFO]: stessa size (--body-size). */
+/* Descrizione e label [PROJECT INFO]: ereditano --body-size da __info.
+   Stessa line-height della descrizione, senza padding: così [PROJECT INFO]
+   cade al centro della prima riga del body (non in cima al blocco). */
 .project-intro__label {
   margin: 0;
-  padding-top: 0.25em;
+  padding: 0;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: var(--body-size);
+  font-size: 1em;
   font-weight: 500;
   line-height: var(--body-lh);
   letter-spacing: -0.01em;
@@ -1115,11 +1153,11 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   display: flex;
   flex-direction: column;
   /* Una riga vuota tra i paragrafi, come nella pagina About */
-  gap: calc(var(--body-lh) * 1em);
+  gap: 1em;
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: var(--body-size);
+  font-size: 1em;
   font-weight: 500;
-  line-height: var(--body-lh);
+  line-height: inherit;
   letter-spacing: -0.01em;
   color: #0b0b0b;
 }
@@ -1142,6 +1180,13 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 @media (min-width: 1024px) {
+  /* Da desktop ogni titolo sta su 3 righe (a capo fissi nell'HTML): la riga
+     più lunga (AROUND FEMALE SEXUALITY.) vale ~67% della larghezza, quindi la
+     colonna passa da 62% a 70% (28% + 70% resta dentro il contenitore). */
+  .project-intro {
+    --project-intro-title-col: 70%;
+  }
+
   .project-intro__title .project-intro__br {
     display: inline;
   }
@@ -1278,16 +1323,22 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
   --about-skills-gap: 22px;
   --about-skills-pad-top: calc(var(--about-skills-gap) - 0.27 * var(--body-size));
   --about-skills-pad-bottom: calc(var(--about-skills-gap) - 0.42 * var(--about-body));
+  /* Titolo + intro centrati tra le due linee: stesso spazio visibile sopra
+     (linea → cap-height del titolo) e sotto (baseline dell'intro → linea).
+     Misurato nel browser: a interlinea 1.055 il cap del titolo sta a 0.19em
+     dal top della riga; sotto la baseline dell'intro (lh 1.1) restano 0.22em. */
+  --about-skills-head-gap: clamp(22px, 3vw, 30px);
+  --about-skills-title-size: calc(var(--about-title) * 0.72);
   max-width: calc(var(--about-body) * 34);
   margin-top: clamp(44px, 6vw, 72px);
-  padding-top: clamp(22px, 3vw, 30px);
+  padding-top: calc(var(--about-skills-head-gap) - 0.19 * var(--about-skills-title-size));
   border-top: 1px solid rgba(11, 11, 11, 0.1);
   font-family: Geist, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 .about-skills__title {
   margin: 0;
-  font-size: calc(var(--about-title) * 0.72);
+  font-size: var(--about-skills-title-size);
   font-weight: 600;
   line-height: 1.055;
   letter-spacing: -0.035em;
@@ -1303,7 +1354,7 @@ html.is-intro-settling.is-page-in [aria-label="Controlli carosello"] {
 }
 
 .about-skills__list {
-  margin-top: var(--about-skills-pad-bottom);
+  margin-top: calc(var(--about-skills-head-gap) - 0.22 * var(--about-body));
 }
 
 /* La linea sta a metà tra il testo sopra e l'etichetta sotto, misurando
