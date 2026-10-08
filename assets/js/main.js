@@ -740,7 +740,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 	const TEXT_IN = 1080 * MOTION;
 	const STAGGER = 48 * MOTION;
-	const START = 216 * MOTION; // come il page-in della home
+	/* Arrivando dal velo di "Contact me" la pagina è già coperta d'azzurro da
+	   ~2s: le scritte partono subito, senza la pausa del page-in */
+	const START = root.classList.contains("is-contact-arrived") ? 0 : 216 * MOTION; // come il page-in della home
 
 	items.forEach((item, i) => {
 		item.animate(
@@ -1040,4 +1042,163 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	window.requestAnimationFrame(step);
 	window.setTimeout(land, FLIGHT_DURATION + 400);
+});
+
+/* Contact me (come iamrossmason.com):
+   un velo azzurro scende dall'alto con il bordo in diagonale (angolo destro in
+   1s, sinistro in 1.25s, × MOTION) e copre la pagina; poi si apre la pagina
+   contatti, già azzurra. Uscendo dai contatti il velo risale al contrario
+   (destro in 1s, sinistro in 1.25s) e scopre il bianco della pagina successiva. */
+const CONTACT_WIPE_KEY = "contactWipe";
+const CONTACT_WIPE_FAST = 1000 * MOTION;
+const CONTACT_WIPE_SLOW = 1250 * MOTION;
+
+/* Curva "snappy" del sito di riferimento (CustomEase GSAP): tre segmenti cubici
+   da (0,0) a (1,1). Campionata una volta in una tabella x → y. */
+const snappyEase = (() => {
+	const segments = [
+		[0, 0, 0.094, 0.026, 0.124, 0.127, 0.157, 0.29],
+		[0.157, 0.29, 0.197, 0.486, 0.254, 0.8, 0.348, 0.884],
+		[0.348, 0.884, 0.42, 0.949, 0.374, 1, 1, 1],
+	];
+	const cubic = (a, b, c, d, t) => {
+		const u = 1 - t;
+		return u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * d;
+	};
+	const points = [];
+	segments.forEach(([x0, y0, x1, y1, x2, y2, x3, y3]) => {
+		for (let i = 0; i <= 100; i += 1) {
+			const t = i / 100;
+			points.push([cubic(x0, x1, x2, x3, t), cubic(y0, y1, y2, y3, t)]);
+		}
+	});
+	/* Il terzo segmento torna leggermente indietro in x: la tabella va resa monotona */
+	for (let i = 1; i < points.length; i += 1) {
+		if (points[i][0] < points[i - 1][0]) points[i][0] = points[i - 1][0];
+	}
+	return (x) => {
+		if (x <= 0) return 0;
+		if (x >= 1) return 1;
+		let lo = 0;
+		let hi = points.length - 1;
+		while (hi - lo > 1) {
+			const mid = (lo + hi) >> 1;
+			if (points[mid][0] < x) lo = mid;
+			else hi = mid;
+		}
+		const [xa, ya] = points[lo];
+		const [xb, yb] = points[hi];
+		return xb === xa ? yb : ya + ((x - xa) / (xb - xa)) * (yb - ya);
+	};
+})();
+
+/* Porta i due angoli da/a 0–100: rAF + timer di sicurezza, perché rAF si
+   ferma se la scheda non renderizza e la navigazione non deve bloccarsi.
+   Sul velo fisso i valori sono % dello schermo; sul body (che può essere più
+   alto dello schermo) sono px fino al fondo della parte visibile, così la
+   diagonale ha la stessa velocità in entrambi i casi. */
+const runContactWipe = (el, from, to, done) => {
+	const start = performance.now();
+	let finished = false;
+	const visibleBottom = window.scrollY + window.innerHeight;
+	const unit = el === document.body ? (p) => `${(visibleBottom * p) / 100}px` : (p) => `${p}%`;
+	const set = (right, left) => {
+		el.style.setProperty("--wipe-right", unit(right));
+		el.style.setProperty("--wipe-left", unit(left));
+	};
+	const progress = (elapsed, duration) => from + (to - from) * snappyEase(Math.min(elapsed / duration, 1));
+	const finish = () => {
+		if (finished) return;
+		finished = true;
+		set(to, to);
+		done?.();
+	};
+	const step = (now) => {
+		if (finished) return;
+		const elapsed = now - start;
+		set(progress(elapsed, CONTACT_WIPE_FAST), progress(elapsed, CONTACT_WIPE_SLOW));
+		if (elapsed < CONTACT_WIPE_SLOW) window.requestAnimationFrame(step);
+		else finish();
+	};
+	set(from, from);
+	window.requestAnimationFrame(step);
+	window.setTimeout(finish, CONTACT_WIPE_SLOW + 100);
+};
+
+const isPlainClick = (event) =>
+	event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+
+const isContactHref = (link) => /(^|\/)contactMe\.html$/.test(link.pathname);
+
+document.addEventListener("DOMContentLoaded", () => {
+	const root = document.documentElement;
+	const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const isContactPage = document.body.classList.contains("page-contact");
+
+	/* Entrata da URL diretto: il body parte chiuso (classe messa nell'head) e si apre */
+	if (isContactPage && root.classList.contains("is-contact-closed")) {
+		root.classList.remove("is-contact-closed");
+		runContactWipe(document.body, 0, 100, () => {
+			root.classList.remove("is-contact-wiping");
+			document.body.style.removeProperty("--wipe-right");
+			document.body.style.removeProperty("--wipe-left");
+		});
+	}
+
+	let leaving = null;
+
+	document.addEventListener("click", (event) => {
+		const link = event.target.closest("a[href]");
+		if (!link || event.defaultPrevented || leaving || !isPlainClick(event)) return;
+		if (link.target && link.target !== "_self") return;
+		if (link.origin !== window.location.origin || !/\.html$|\/$/.test(link.pathname)) return;
+		if (prefersReduced.matches) return;
+
+		const toContact = isContactHref(link);
+		if (isContactPage === toContact) return; // da contatti a contatti, o tra pagine normali
+
+		event.preventDefault();
+		document.body.style.pointerEvents = "none";
+		const go = () => {
+			window.location.href = link.href;
+		};
+
+		if (toContact) {
+			/* Velo sopra la pagina corrente, poi la pagina contatti si apre già coperta */
+			/* La pagina contatti si scarica mentre il velo scende, così a fine
+			   velo è pronta e non c'è attesa prima delle scritte */
+			const prefetch = document.createElement("link");
+			prefetch.rel = "prefetch";
+			prefetch.href = link.href;
+			document.head.appendChild(prefetch);
+
+			const wipe = document.createElement("div");
+			wipe.className = "contact-wipe";
+			wipe.setAttribute("aria-hidden", "true");
+			document.body.appendChild(wipe);
+			leaving = { wipe };
+			runContactWipe(wipe, 0, 100, () => {
+				try {
+					sessionStorage.setItem(CONTACT_WIPE_KEY, "1");
+				} catch (_) {}
+				go();
+			});
+		} else {
+			/* Il body azzurro risale e scopre il bianco dell'html */
+			root.classList.add("is-contact-wiping");
+			leaving = {};
+			runContactWipe(document.body, 100, 0, go);
+		}
+	});
+
+	/* Tornando indietro (bfcache) la pagina deve ricomparire intatta */
+	window.addEventListener("pageshow", (event) => {
+		if (!event.persisted || !leaving) return;
+		leaving.wipe?.remove();
+		root.classList.remove("is-contact-wiping");
+		document.body.style.removeProperty("--wipe-right");
+		document.body.style.removeProperty("--wipe-left");
+		document.body.style.pointerEvents = "";
+		leaving = null;
+	});
 });
