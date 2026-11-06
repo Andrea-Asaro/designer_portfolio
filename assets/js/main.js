@@ -821,7 +821,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	/* Cover e immagini della galleria */
-	const media = Array.from(document.querySelectorAll(".project-cover figure, section[aria-label^='Galleria'] figure"));
+	const media = Array.from(document.querySelectorAll(".project-cover figure, section[aria-label$='project gallery'] figure"));
 	media.forEach((figure) => figure.classList.add("project-media"));
 
 	/* Testi dell'intro, in ordine di lettura */
